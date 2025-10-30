@@ -1,4 +1,5 @@
 
+using CloudinaryDotNet;
 using Corporate_Banking_Payment_Application.Data;
 using Corporate_Banking_Payment_Application.Repository;
 using Corporate_Banking_Payment_Application.Repository.IRepository;
@@ -68,6 +69,9 @@ namespace Corporate_Banking_Payment_Application
             builder.Services.AddScoped<IBatchTransactionRepository, BatchTransactionRepository>();
             builder.Services.AddScoped<IBatchTransactionService, BatchTransactionService>();
 
+            builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+            builder.Services.AddScoped<IDocumentService, DocumentService>();
+
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
@@ -87,7 +91,21 @@ namespace Corporate_Banking_Payment_Application
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+
             // TODO: add Authentication (JWT), Authorization, AutoMapper, Repositories, Services, etc.
+
+            // 1. Get configuration settings for Cloudinary (assuming they are in appsettings.json or secrets)
+            var cloudinaryAccount = new Account(
+                 builder.Configuration["CloudinarySettings:CloudName"],
+                 builder.Configuration["CloudinarySettings:ApiKey"],
+                 builder.Configuration["CloudinarySettings:ApiSecret"]
+            );
+
+            // 2. Register the Cloudinary client as a Singleton
+            // Singleton is appropriate because the client object is thread-safe and expensive to create.
+            var cloudinary = new Cloudinary(cloudinaryAccount) { Api = { Secure = true } };
+            builder.Services.AddSingleton(cloudinary);
 
             var app = builder.Build();
 
