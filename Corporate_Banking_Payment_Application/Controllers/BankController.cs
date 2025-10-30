@@ -1,0 +1,72 @@
+﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Corporate_Banking_Payment_Application.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BankController : ControllerBase
+    {
+        private readonly IBankService _service;
+
+        public BankController(IBankService service)
+        {
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllBank()
+        {
+            var banks = await _service.GetAllBank();
+            return Ok(banks);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBankById(int id)
+        {
+            var bank = await _service.GetBankById(id);
+            if (bank == null) return NotFound();
+            return Ok(bank);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBank([FromBody] CreateBankDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var created = await _service.CreateBank(dto);
+                return CreatedAtAction(nameof(GetBankById), new { id = created.BankId }, created);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBank(int id, [FromBody] UpdateBankDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _service.UpdateBank(id, dto);
+            if (updated == null)
+                return NotFound();
+
+            return Ok(updated);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _service.DeleteBank(id);
+            if (!deleted) return NotFound();
+
+            return NoContent();
+        }
+    }
+}

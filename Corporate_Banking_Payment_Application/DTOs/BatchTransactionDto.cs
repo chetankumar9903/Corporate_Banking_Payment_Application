@@ -1,0 +1,60 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Corporate_Banking_Payment_Application.DTOs
+{
+    public class BatchTransactionDto
+    {
+        // ✅ For Reading
+
+        public int BatchId { get; set; }
+        public int ClientId { get; set; }
+        public DateTime Date { get; set; }
+        public int TotalTransactions { get; set; }
+        public decimal TotalAmount { get; set; }
+
+        // Optional: to view all salary disbursements under this batch
+        public IEnumerable<SalaryDisbursementDto>? SalaryDisbursements { get; set; }
+    }
+
+    // ✅ For Creating
+    //public class CreateBatchTransactionDto
+    //{
+    //    [Required]
+    //    public int ClientId { get; set; }
+
+    //    [Required]
+    //    public int TotalTransactions { get; set; }
+
+    //    [Required]
+    //    public decimal TotalAmount { get; set; }
+    //}
+
+    // ✅ For Creating a New Batch
+    //public class CreateBatchTransactionDto
+    //{
+    //    [Required]
+    //    public int ClientId { get; set; }
+
+    //    [Required]
+    //    public List<CreateSalaryDisbursementDto> Disbursements { get; set; } = new();
+
+    //    [MaxLength(200)]
+    //    public string? Description { get; set; }
+    //}
+
+
+    public class CreateBatchTransactionDto
+    {
+        [Required]
+        public int ClientId { get; set; }
+
+        [Required]
+        public List<int> EmployeeIds { get; set; } = new();
+
+        [Required, Range(1, double.MaxValue, ErrorMessage = "Amount must be greater than zero.")]
+        public decimal TotalAmount { get; set; }
+
+        [MaxLength(200)]
+        public string? Description { get; set; }
+    }
+}
