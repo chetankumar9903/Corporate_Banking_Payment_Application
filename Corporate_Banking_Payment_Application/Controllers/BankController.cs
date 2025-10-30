@@ -1,5 +1,6 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -14,7 +15,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         {
             _service = service;
         }
-
+        [Authorize(Roles = "SUPERADMIN")]
         [HttpGet]
         public async Task<IActionResult> GetAllBank()
         {

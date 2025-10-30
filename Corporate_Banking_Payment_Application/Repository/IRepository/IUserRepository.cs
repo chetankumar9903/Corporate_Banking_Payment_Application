@@ -11,5 +11,9 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
         Task DeleteUser(User user);
         Task<bool> ExistsUser(int id);
         Task<User?> GetUserByUserName(string username);
+
+        Task<User?> GetByUserName(string username);
+        Task<User?> GetByEmail(string email);
+
     }
 }

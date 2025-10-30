@@ -51,5 +51,16 @@ namespace Corporate_Banking_Payment_Application.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
         }
+
+
+        public async Task<User?> GetByUserName(string username)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        }
+
+        public async Task<User?> GetByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.EmailId == email);
+        }
     }
 }
