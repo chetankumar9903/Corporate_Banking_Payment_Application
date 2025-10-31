@@ -121,9 +121,36 @@ namespace corporate_banking_payment_application.DTOs
 
     public class TransactionReportDto
     {
+        public string TransactionId { get; set; } = string.Empty;
         public DateTime? Date { get; set; }
-        public decimal Amount { get; set; }
         public string Type { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public string Recipient { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public string? Description { get; set; }
+    }
+
+    public class PaymentReportDto
+    {
+        public int PaymentId { get; set; }
+        public int ClientId { get; set; }
+        public int BeneficiaryId { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime RequestDate { get; set; }
+        public DateTime? ProcessedDate { get; set; }
+        public Status PaymentStatus { get; set; }
+        public string? Description { get; set; }
+        public string? RejectReason { get; set; }
+    }
+
+    public class SalaryReportDto
+    {
+        public int SalaryDisbursementId { get; set; }
+        public int ClientId { get; set; }
+        public int EmployeeId { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+        public string? Description { get; set; }
+        public int? BatchId { get; set; }
     }
 }

@@ -322,38 +322,132 @@ namespace Corporate_Banking_Payment_Application.Services
             {
                 case ReportType.PAYMENT:
                     {
+                        //var payments = await _paymentRepo.GetPaymentsByClientId(clientId);
+                        //var filteredPayments = ApplyDateRangeFilter(payments, request.StartDate, request.EndDate);
+
+                        //// Call generator with the specific type: Payment
+                        //fileStream = ReportGenerator.Generate(filteredPayments, request.OutputFormat, request.ReportType);
+                        //break;
+
                         var payments = await _paymentRepo.GetPaymentsByClientId(clientId);
                         var filteredPayments = ApplyDateRangeFilter(payments, request.StartDate, request.EndDate);
 
-                        // Call generator with the specific type: Payment
-                        fileStream = ReportGenerator.Generate(filteredPayments, request.OutputFormat, request.ReportType);
+                        if (!filteredPayments.Any())
+                        {
+                            throw new ArgumentException("No payment data found for the selected criteria.");
+                        }
+
+                        // ⭐️ --- ADD THIS MAPPING LOGIC --- ⭐️
+                        var paymentReportData = filteredPayments.Select(p => new PaymentReportDto
+                        {
+                            PaymentId = p.PaymentId,
+                            ClientId = p.ClientId,
+                            BeneficiaryId = p.BeneficiaryId,
+                            Amount = p.Amount,
+                            RequestDate = p.RequestDate,
+                            ProcessedDate = p.ProcessedDate,
+                            PaymentStatus = p.PaymentStatus,
+                            Description = p.Description,
+                            RejectReason = p.RejectReason
+                        }).ToList();
+                        // ⭐️ --- END OF NEW LOGIC --- ⭐️
+
+                        // Pass the new DTO list to the generator
+                        fileStream = ReportGenerator.Generate(paymentReportData, request.OutputFormat, request.ReportType);
                         break;
                     }
 
                 case ReportType.SALARY:
                     {
+                        //var salaries = await _salaryRepo.GetByClientId(clientId);
+                        //var filteredSalaries = ApplyDateRangeFilter(salaries, request.StartDate, request.EndDate);
+
+                        //// Call generator with the specific type: SalaryDisbursement
+                        //fileStream = ReportGenerator.Generate(filteredSalaries, request.OutputFormat, request.ReportType);
+                        //break;
                         var salaries = await _salaryRepo.GetByClientId(clientId);
                         var filteredSalaries = ApplyDateRangeFilter(salaries, request.StartDate, request.EndDate);
 
-                        // Call generator with the specific type: SalaryDisbursement
-                        fileStream = ReportGenerator.Generate(filteredSalaries, request.OutputFormat, request.ReportType);
+                        if (!filteredSalaries.Any())
+                        {
+                            throw new ArgumentException("No salary data found for the selected criteria.");
+                        }
+
+                        // ⭐️ --- ADD THIS MAPPING LOGIC --- ⭐️
+                        var salaryReportData = filteredSalaries.Select(s => new SalaryReportDto
+                        {
+                            SalaryDisbursementId = s.SalaryDisbursementId,
+                            ClientId = s.ClientId,
+                            EmployeeId = s.EmployeeId,
+                            Amount = s.Amount,
+                            Date = s.Date,
+                            Description = s.Description,
+                            BatchId = s.BatchId
+                        }).ToList();
+                        // ⭐️ --- END OF NEW LOGIC --- ⭐️
+
+                        // Pass the new DTO list to the generator
+                        fileStream = ReportGenerator.Generate(salaryReportData, request.OutputFormat, request.ReportType);
                         break;
                     }
 
                 case ReportType.TRANSACTION:
                     {
-                        // For TRANSACTION, we use our new TransactionReportDto
+                        //// For TRANSACTION, we use our new TransactionReportDto
+                        //var allPayments = await _paymentRepo.GetPaymentsByClientId(clientId);
+                        //var allSalaries = await _salaryRepo.GetByClientId(clientId);
+
+                        //// Map both lists to the common DTO
+                        //var combinedTransactions = new List<TransactionReportDto>();
+                        //combinedTransactions.AddRange(allPayments.Select(p => new TransactionReportDto { Date = p.RequestDate, Amount = p.Amount, Type = "Payment", Description = p.Description }));
+                        //combinedTransactions.AddRange(allSalaries.Select(s => new TransactionReportDto { Date = s.Date, Amount = s.Amount, Type = "Salary", Description = s.Description }));
+
+                        //var filteredTransactions = ApplyDateRangeFilter(combinedTransactions, request.StartDate, request.EndDate);
+
+                        //// Call generator with the specific type: TransactionReportDto
+                        //fileStream = ReportGenerator.Generate(filteredTransactions, request.OutputFormat, request.ReportType);
+                        //break;
+
                         var allPayments = await _paymentRepo.GetPaymentsByClientId(clientId);
                         var allSalaries = await _salaryRepo.GetByClientId(clientId);
 
-                        // Map both lists to the common DTO
                         var combinedTransactions = new List<TransactionReportDto>();
-                        combinedTransactions.AddRange(allPayments.Select(p => new TransactionReportDto { Date = p.RequestDate, Amount = p.Amount, Type = "Payment", Description = p.Description }));
-                        combinedTransactions.AddRange(allSalaries.Select(s => new TransactionReportDto { Date = s.Date, Amount = s.Amount, Type = "Salary", Description = s.Description }));
 
-                        var filteredTransactions = ApplyDateRangeFilter(combinedTransactions, request.StartDate, request.EndDate);
+                        // Map Payments
+                        combinedTransactions.AddRange(allPayments.Select(p => new TransactionReportDto
+                        {
+                            TransactionId = $"PAY-{p.PaymentId}",
+                            Date = p.RequestDate,
+                            Type = "Payment",
+                            Amount = p.Amount,
+                            // Check if Beneficiary was loaded
+                            Recipient = p.Beneficiary?.BeneficiaryName ?? "N/A",
+                            Status = p.PaymentStatus.ToString(),
+                            Description = p.Description
+                        }));
 
-                        // Call generator with the specific type: TransactionReportDto
+                        // Map Salary Disbursements
+                        combinedTransactions.AddRange(allSalaries.Select(s => new TransactionReportDto
+                        {
+                            TransactionId = $"SAL-{s.SalaryDisbursementId}",
+                            Date = s.Date,
+                            Type = "Salary",
+                            Amount = s.Amount,
+                            // Check if Employee was loaded
+                            Recipient = s.Employee != null ? $"{s.Employee.FirstName} {s.Employee.LastName}" : "N/A",
+                            Status = "Disbursed", // Salary disbursements are considered complete
+                            Description = s.Description
+                        }));
+
+                        var filteredTransactions = ApplyDateRangeFilter(combinedTransactions, request.StartDate, request.EndDate)
+                                                     .OrderBy(t => t.Date) // Order by date
+                                                     .ToList();
+
+                        if (!filteredTransactions.Any())
+                        {
+                            throw new ArgumentException("No transaction data found for the selected criteria.");
+                        }
+
                         fileStream = ReportGenerator.Generate(filteredTransactions, request.OutputFormat, request.ReportType);
                         break;
                     }
