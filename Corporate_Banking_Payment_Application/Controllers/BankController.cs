@@ -31,6 +31,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(bank);
         }
 
+        [Authorize(Roles = "SUPERADMIN")]
         [HttpPost]
         public async Task<IActionResult> CreateBank([FromBody] CreateBankDto dto)
         {
@@ -48,6 +49,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
+        [Authorize(Roles = "SUPERADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBank(int id, [FromBody] UpdateBankDto dto)
         {
@@ -61,6 +63,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(updated);
         }
 
+        [Authorize(Roles = "SUPERADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

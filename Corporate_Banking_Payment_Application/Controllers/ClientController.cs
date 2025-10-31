@@ -1,5 +1,6 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -15,6 +16,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
+        [Authorize(Roles = "BANKUSER")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,6 +24,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(clients);
         }
 
+        [Authorize(Roles = "BANKUSER")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -30,6 +33,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(client);
         }
 
+        [Authorize(Roles = "BANKUSER")]
         // Get client by CustomerId
         [HttpGet("byCustomer/{customerId}")]
         public async Task<IActionResult> GetByCustomerId(int customerId)
@@ -40,7 +44,9 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
+
         // Create new client (only if customer approved)
+        [Authorize(Roles = "BANKUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateClientDto dto)
         {
@@ -56,6 +62,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
+        [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateClientDto dto)
         {
@@ -71,6 +78,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
+        [Authorize(Roles = "BANKUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
