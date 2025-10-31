@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 
 namespace Corporate_Banking_Payment_Application.Services.IService
 {
@@ -9,5 +10,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<UserDto> CreateUser(CreateUserDto dto);
         Task<UserDto?> UpdateUser(int id, UpdateUserDto dto);
         Task<bool> DeleteUser(int id);
+
+        Task<IEnumerable<User>> GetUnassignedBankUsersAsync();
     }
 }

@@ -59,5 +59,11 @@ namespace Corporate_Banking_Payment_Application.Services
             await _userRepo.DeleteUser(user);
             return true;
         }
+
+        public async Task<IEnumerable<User>> GetUnassignedBankUsersAsync()
+        {
+            return await _userRepo.GetUnassignedBankUsersAsync();
+        }
+
     }
 }

@@ -14,6 +14,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public string Address { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public UserRole UserRole { get; set; }
+
     }
 
     public class CreateUserDto
