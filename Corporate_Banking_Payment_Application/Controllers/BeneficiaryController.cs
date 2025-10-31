@@ -47,7 +47,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBeneficiaryDto dto)
         {
@@ -64,7 +64,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBeneficiaryDto dto)
         {
@@ -82,7 +82,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -63,7 +63,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 File = new FileDescription(file.FileName, file.OpenReadStream()),
                 // Define a public ID based on customer/type for organization and security
                 PublicId = $"customer-docs/{dto.CustomerId}/{dto.DocumentType}/{Guid.NewGuid()}",
-                Folder = "corporate_banking_app", // Optional folder structure
+                Folder = "corporate_banking_app_documents", // Optional folder structure
                 // Use "authenticated" type for sensitive banking documents
                 Type = "authenticated"
             };
