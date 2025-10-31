@@ -1,6 +1,7 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -18,6 +19,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "BANKUSER")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllCustomers();
@@ -31,7 +33,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             if (result == null) return NotFound();
             return Ok(result);
         }
-
+        [Authorize(Roles = "BANKUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCustomerDto dto)
         {
@@ -50,6 +52,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
+        [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomerDto dto)
         {
@@ -70,6 +73,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
         }
 
+        [Authorize(Roles = "BANKUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -78,6 +82,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "BANKUSER")]
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] Status newStatus)
         {

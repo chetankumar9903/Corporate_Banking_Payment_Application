@@ -1,5 +1,6 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -34,6 +35,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         public async Task<IActionResult> GetByClientId(int clientId)
             => Ok(await _service.GetByClientId(clientId));
 
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBatchTransactionDto dto)
         {
@@ -54,6 +56,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
         }
 
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

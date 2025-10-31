@@ -1,5 +1,6 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -39,6 +40,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "BANKUSER")]
         public async Task<IActionResult> GetAllDocuments()
         {
             var documents = await _service.GetAllDocuments();
@@ -75,6 +77,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// Uploads a new document to Cloudinary and saves its reference to the database.
         /// </summary>
         /// <param name="request">Contains the file content (IFormFile) and metadata (CustomerId, DocumentType).</param>
+        [Authorize(Roles = "BANKUSER")]
         [HttpPost("upload")]
         [Consumes("multipart/form-data")] // Essential for Swagger/Postman to recognize file upload
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -123,6 +126,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// </summary>
         /// <param name="id">The ID of the document to update.</param>
         /// <param name="dto">The update DTO (e.g., IsActive status).</param>
+        [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -142,6 +146,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// Deletes the document record and the corresponding file from Cloudinary.
         /// </summary>
         /// <param name="id">The ID of the document to delete.</param>
+        [Authorize(Roles = "BANKUSER")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

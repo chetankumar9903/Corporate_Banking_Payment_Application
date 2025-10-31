@@ -1,5 +1,6 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -41,6 +42,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// Creates a new employee record.
         /// </summary>
         /// <param name="dto">The data transfer object for creating an employee.</param>
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeDto dto)
         {
@@ -64,6 +66,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// </summary>
         /// <param name="id">The ID of the employee to update.</param>
         /// <param name="dto">The data transfer object for updating an employee.</param>
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
         {
@@ -79,6 +82,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// Deletes a specific employee record.
         /// </summary>
         /// <param name="id">The ID of the employee to delete.</param>
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {

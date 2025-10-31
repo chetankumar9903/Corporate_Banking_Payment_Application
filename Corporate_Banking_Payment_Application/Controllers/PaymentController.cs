@@ -1,6 +1,7 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -76,6 +77,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// Creates a new payment request.
         /// </summary>
         /// <param name="dto">The data transfer object for creating a payment.</param>
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentDto dto)
         {
@@ -99,6 +101,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// </summary>
         /// <param name="id">The ID of the payment to update.</param>
         /// <param name="dto">The data transfer object containing the status update.</param>
+        [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePayment(int id, [FromBody] UpdatePaymentDto dto)
         {
@@ -114,6 +117,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         /// Deletes a specific payment record.
         /// </summary>
         /// <param name="id">The ID of the payment to delete.</param>
+        [Authorize(Roles = "SUPERADMIN,BANKUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePayment(int id)
         {
