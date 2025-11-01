@@ -18,11 +18,24 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
+        //[HttpGet]
+        ////[Authorize(Roles = "BANKUSER")]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var result = await _service.GetAllCustomers();
+        //    return Ok(result);
+        //}
+
         [HttpGet]
         //[Authorize(Roles = "BANKUSER")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var result = await _service.GetAllCustomers();
+            var result = await _service.GetAllCustomers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(result);
         }
 

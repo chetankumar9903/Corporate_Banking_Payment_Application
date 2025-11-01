@@ -17,11 +17,23 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        /// Retrieves a list of all payments.
+        ///// Retrieves a list of all payments.
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllPayments()
+        //{
+        //    var payments = await _service.GetAllPayments();
+        //    return Ok(payments);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAllPayments()
+        public async Task<IActionResult> GetAllPayments(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var payments = await _service.GetAllPayments();
+            var payments = await _service.GetAllPayments(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(payments);
         }
 

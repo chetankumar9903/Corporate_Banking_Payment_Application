@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,13 +34,27 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        //Retrieves all document metadata for the application. (Use sparingly, primarily for admin/auditing).
+        ////Retrieves all document metadata for the application. (Use sparingly, primarily for admin/auditing).
+        //[HttpGet]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        ////[Authorize(Roles = "BANKUSER")]
+        //public async Task<IActionResult> GetAllDocuments()
+        //{
+        //    var documents = await _service.GetAllDocuments();
+        //    return Ok(documents);
+        //}
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[Authorize(Roles = "BANKUSER")]
-        public async Task<IActionResult> GetAllDocuments()
+        public async Task<IActionResult> GetAllDocuments(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var documents = await _service.GetAllDocuments();
+            var documents = await _service.GetAllDocuments(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(documents);
         }
 

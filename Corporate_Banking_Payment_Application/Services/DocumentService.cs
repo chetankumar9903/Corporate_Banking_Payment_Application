@@ -29,10 +29,22 @@ namespace Corporate_Banking_Payment_Application.Services
 
         // --- Retrieval Operations ---
 
-        public async Task<IEnumerable<DocumentDto>> GetAllDocuments()
+        //public async Task<IEnumerable<DocumentDto>> GetAllDocuments()
+        //{
+        //    var documents = await _documentRepo.GetAllDocuments();
+        //    return _mapper.Map<IEnumerable<DocumentDto>>(documents);
+        //}
+        public async Task<PagedResult<DocumentDto>> GetAllDocuments(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var documents = await _documentRepo.GetAllDocuments();
-            return _mapper.Map<IEnumerable<DocumentDto>>(documents);
+            var pagedResult = await _documentRepo.GetAllDocuments(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
+            var itemsDto = _mapper.Map<IEnumerable<DocumentDto>>(pagedResult.Items);
+
+            return new PagedResult<DocumentDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<DocumentDto?> GetDocumentById(int id)

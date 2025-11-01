@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,25 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
+        ////[Authorize(Roles = "BANKUSER")]
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var clients = await _service.GetAllClients();
+        //    return Ok(clients);
+        //}
+
         //[Authorize(Roles = "BANKUSER")]
+        // MODIFIED: This endpoint now accepts query parameters
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var clients = await _service.GetAllClients();
+            var clients = await _service.GetAllClients(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(clients);
         }
 

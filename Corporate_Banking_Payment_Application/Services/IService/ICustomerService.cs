@@ -5,7 +5,8 @@ namespace Corporate_Banking_Payment_Application.Services.IService
 {
     public interface ICustomerService
     {
-        Task<IEnumerable<CustomerDto>> GetAllCustomers();
+        //Task<IEnumerable<CustomerDto>> GetAllCustomers();
+        Task<PagedResult<CustomerDto>> GetAllCustomers(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize);
         Task<CustomerDto?> GetCustomerById(int id);
         Task<CustomerDto> CreateCustomer(CreateCustomerDto dto);
         Task<CustomerDto> UpdateCustomer(int id, UpdateCustomerDto dto);

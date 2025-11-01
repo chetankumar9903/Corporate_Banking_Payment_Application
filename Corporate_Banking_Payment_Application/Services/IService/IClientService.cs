@@ -1,10 +1,12 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 namespace Corporate_Banking_Payment_Application.Services.IService
 {
     public interface IClientService
     {
 
-        Task<IEnumerable<ClientDto>> GetAllClients();
+        //Task<IEnumerable<ClientDto>> GetAllClients();
+        Task<PagedResult<ClientDto>> GetAllClients(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize);
 
 
         Task<ClientDto?> GetClientById(int id);

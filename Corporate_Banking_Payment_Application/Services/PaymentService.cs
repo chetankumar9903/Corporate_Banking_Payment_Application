@@ -26,10 +26,21 @@ namespace Corporate_Banking_Payment_Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PaymentDto>> GetAllPayments()
+        //public async Task<IEnumerable<PaymentDto>> GetAllPayments()
+        //{
+        //    var payments = await _paymentRepo.GetAllPayments();
+        //    return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+        //}
+
+        public async Task<PagedResult<PaymentDto>> GetAllPayments(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var payments = await _paymentRepo.GetAllPayments();
-            return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+            var pagedResult = await _paymentRepo.GetAllPayments(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+            var itemsDto = _mapper.Map<IEnumerable<PaymentDto>>(pagedResult.Items);
+            return new PagedResult<PaymentDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<PaymentDto?> GetPaymentById(int id)

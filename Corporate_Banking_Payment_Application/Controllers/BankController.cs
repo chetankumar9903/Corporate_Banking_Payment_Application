@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,25 @@ namespace Corporate_Banking_Payment_Application.Controllers
         {
             _service = service;
         }
+        ////[Authorize(Roles = "SUPERADMIN")]
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllBank()
+        //{
+        //    var banks = await _service.GetAllBank();
+        //    return Ok(banks);
+        //}
+
         //[Authorize(Roles = "SUPERADMIN")]
+        // MODIFIED: This endpoint now accepts query parameters
         [HttpGet]
-        public async Task<IActionResult> GetAllBank()
+        public async Task<IActionResult> GetAllBank(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var banks = await _service.GetAllBank();
+            var banks = await _service.GetAllBank(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(banks);
         }
 

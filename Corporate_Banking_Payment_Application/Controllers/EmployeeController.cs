@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,23 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        /// Retrieves a list of all employees.
+        ///// Retrieves a list of all employees.
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllEmployees()
+        //{
+        //    var employees = await _service.GetAllEmployees();
+        //    return Ok(employees);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAllEmployees()
+        public async Task<IActionResult> GetAllEmployees(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var employees = await _service.GetAllEmployees();
+            var employees = await _service.GetAllEmployees(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(employees);
         }
 

@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +17,22 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllUsers()
+        //{
+        //    var users = await _service.GetAllUsers();
+        //    return Ok(users);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null, // Changed to enum
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var users = await _service.GetAllUsers();
+            var users = await _service.GetAllUsers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(users);
         }
 

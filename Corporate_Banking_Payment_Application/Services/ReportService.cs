@@ -215,11 +215,24 @@ namespace Corporate_Banking_Payment_Application.Services
             return report == null ? null : _mapper.Map<ReportDto>(report);
         }
 
-        public async Task<IEnumerable<ReportDto>> GetReportsByUser(int userId)
+        //public async Task<IEnumerable<ReportDto>> GetReportsByUser(int userId)
+        //{
+        //    // The repository call can remain the same
+        //    var reports = await _reportRepo.GetReportsByUserId(userId);
+        //    return _mapper.Map<IEnumerable<ReportDto>>(reports);
+        //}
+
+        public async Task<PagedResult<ReportDto>> GetReportsByUser(int userId, string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            // The repository call can remain the same
-            var reports = await _reportRepo.GetReportsByUserId(userId);
-            return _mapper.Map<IEnumerable<ReportDto>>(reports);
+            var pagedResult = await _reportRepo.GetReportsByUserId(userId, searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
+            var itemsDto = _mapper.Map<IEnumerable<ReportDto>>(pagedResult.Items);
+
+            return new PagedResult<ReportDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         // --- Internal Helper Methods ---

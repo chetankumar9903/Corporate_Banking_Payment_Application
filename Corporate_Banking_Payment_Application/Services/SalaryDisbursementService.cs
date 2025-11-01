@@ -32,10 +32,21 @@ namespace Corporate_Banking_Payment_Application.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<SalaryDisbursementDto>> GetAll()
+        //public async Task<IEnumerable<SalaryDisbursementDto>> GetAll()
+        //{
+        //    var data = await _repo.GetAll();
+        //    return _mapper.Map<IEnumerable<SalaryDisbursementDto>>(data);
+        //}
+
+        public async Task<PagedResult<SalaryDisbursementDto>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var data = await _repo.GetAll();
-            return _mapper.Map<IEnumerable<SalaryDisbursementDto>>(data);
+            var pagedResult = await _repo.GetAll(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+            var itemsDto = _mapper.Map<IEnumerable<SalaryDisbursementDto>>(pagedResult.Items);
+            return new PagedResult<SalaryDisbursementDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<SalaryDisbursementDto?> GetById(int id)

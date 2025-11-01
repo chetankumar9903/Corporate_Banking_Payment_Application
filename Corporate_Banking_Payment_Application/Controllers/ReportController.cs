@@ -56,18 +56,43 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-      
+
         /// Gets the report history for the specified user
+        //[HttpGet("history")]
+        //[ProducesResponseType(typeof(IEnumerable<ReportDto>), StatusCodes.Status200OK)]
+        //public async Task<IActionResult> GetReportHistory([FromQuery] int currentUserId)
+        //{
+        //    try
+        //    {
+        //        if (currentUserId <= 0)
+        //            return BadRequest(new { error = "A valid currentUserId must be provided as a query parameter." });
+
+        //        var reports = await _reportService.GetReportsByUser(currentUserId);
+        //        return Ok(reports);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error retrieving report history for User {UserId}.", currentUserId);
+        //        return StatusCode(500, new { error = "An internal server error occurred." });
+        //    }
+        //}
+
         [HttpGet("history")]
-        [ProducesResponseType(typeof(IEnumerable<ReportDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetReportHistory([FromQuery] int currentUserId)
+        [ProducesResponseType(typeof(PagedResult<ReportDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetReportHistory(
+            [FromQuery] int currentUserId,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
             try
             {
                 if (currentUserId <= 0)
                     return BadRequest(new { error = "A valid currentUserId must be provided as a query parameter." });
 
-                var reports = await _reportService.GetReportsByUser(currentUserId);
+                var reports = await _reportService.GetReportsByUser(currentUserId, searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
                 return Ok(reports);
             }
             catch (Exception ex)
@@ -76,6 +101,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return StatusCode(500, new { error = "An internal server error occurred." });
             }
         }
+
 
 
         /// Gets a single report's metadata by its ID

@@ -21,11 +21,24 @@ namespace Corporate_Banking_Payment_Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllEmployees()
+        //public async Task<IEnumerable<EmployeeDto>> GetAllEmployees()
+        //{
+        //    var employees = await _employeeRepo.GetAllEmployees();
+        //    // Map the collection of Employee models to EmployeeDto DTOs
+        //    return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+        //}
+
+        public async Task<PagedResult<EmployeeDto>> GetAllEmployees(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var employees = await _employeeRepo.GetAllEmployees();
-            // Map the collection of Employee models to EmployeeDto DTOs
-            return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+            var pagedResult = await _employeeRepo.GetAllEmployees(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
+            var itemsDto = _mapper.Map<IEnumerable<EmployeeDto>>(pagedResult.Items);
+
+            return new PagedResult<EmployeeDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<EmployeeDto?> GetEmployeeById(int id)
