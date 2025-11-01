@@ -45,7 +45,6 @@ namespace Corporate_Banking_Payment_Application.Models
         DateTime.UtcNow,
         TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
     );
-        //public DateTime JoinDate { get; set; } = DateTime.UtcNow;
 
 
         [Required]

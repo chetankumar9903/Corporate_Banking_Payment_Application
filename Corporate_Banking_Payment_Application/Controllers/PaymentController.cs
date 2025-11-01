@@ -17,9 +17,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        /// <summary>
         /// Retrieves a list of all payments.
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllPayments()
         {
@@ -27,10 +25,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(payments);
         }
 
-        /// <summary>
-        /// Retrieves a specific payment by ID.
-        /// </summary>
-        /// <param name="id">The ID of the payment.</param>
+        /// Retrieves a specific payment by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPaymentById(int id)
         {
@@ -39,10 +34,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(payment);
         }
 
-        /// <summary>
-        /// Retrieves payments associated with a specific client.
-        /// </summary>
-        /// <param name="clientId">The ID of the client.</param>
+
+        /// Retrieves payments associated with a specific client
         [HttpGet("client/{clientId}")]
         public async Task<IActionResult> GetPaymentsByClientId(int clientId)
         {
@@ -51,10 +44,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(payments);
         }
 
-        /// <summary>
+
         /// Retrieves payments associated with a specific beneficiary.
-        /// </summary>
-        /// <param name="beneficiaryId">The ID of the beneficiary.</param>
         [HttpGet("beneficiary/{beneficiaryId}")]
         public async Task<IActionResult> GetPaymentsByBeneficiaryId(int beneficiaryId)
         {
@@ -62,10 +53,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(payments);
         }
 
-        /// <summary>
+  
         /// Retrieves payments based on their status (PENDING, APPROVED, REJECTED).
-        /// </summary>
-        /// <param name="status">The payment status.</param>
         [HttpGet("status/{status}")]
         public async Task<IActionResult> GetPaymentsByStatus(Status status)
         {
@@ -73,10 +62,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(payments);
         }
 
-        /// <summary>
-        /// Creates a new payment request.
-        /// </summary>
-        /// <param name="dto">The data transfer object for creating a payment.</param>
+
+        /// Creates a new payment request
         //[Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentDto dto)
@@ -96,11 +83,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        /// <summary>
+
         /// Updates the status and rejection reason of an existing payment.
-        /// </summary>
-        /// <param name="id">The ID of the payment to update.</param>
-        /// <param name="dto">The data transfer object containing the status update.</param>
         //[Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePayment(int id, [FromBody] UpdatePaymentDto dto)
@@ -113,10 +97,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(updated);
         }
 
-        /// <summary>
-        /// Deletes a specific payment record.
-        /// </summary>
-        /// <param name="id">The ID of the payment to delete.</param>
+
+        /// Deletes a specific payment record
         //[Authorize(Roles = "SUPERADMIN,BANKUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePayment(int id)

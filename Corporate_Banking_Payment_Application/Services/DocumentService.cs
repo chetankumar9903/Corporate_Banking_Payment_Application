@@ -68,7 +68,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 Type = "authenticated"
             };
 
-            // FIX: Changed ImageUploadResult to RawUploadResult as RawUploadParams was used.
+ 
             RawUploadResult uploadResult;
             try
             {

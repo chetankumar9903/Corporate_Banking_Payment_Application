@@ -16,9 +16,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        /// <summary>
         /// Retrieves a list of all employees.
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {
@@ -26,10 +24,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(employees);
         }
 
-        /// <summary>
         /// Retrieves a specific employee by ID.
-        /// </summary>
-        /// <param name="id">The ID of the employee.</param>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById(int id)
         {
@@ -38,10 +33,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(employee);
         }
 
-        /// <summary>
+
         /// Creates a new employee record.
-        /// </summary>
-        /// <param name="dto">The data transfer object for creating an employee.</param>
         //[Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeDto dto)
@@ -61,11 +54,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        /// <summary>
+        
         /// Updates an existing employee record.
-        /// </summary>
-        /// <param name="id">The ID of the employee to update.</param>
-        /// <param name="dto">The data transfer object for updating an employee.</param>
         //[Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
@@ -78,10 +68,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(updated);
         }
 
-        /// <summary>
-        /// Deletes a specific employee record.
-        /// </summary>
-        /// <param name="id">The ID of the employee to delete.</param>
+       
+        /// Deletes a specific employee record
         //[Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)

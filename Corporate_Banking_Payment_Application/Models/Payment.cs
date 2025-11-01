@@ -22,7 +22,6 @@ namespace Corporate_Banking_Payment_Application.Models
         DateTime.UtcNow,
         TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
     );
-        //public DateTime RequestDate { get; set; } = DateTime.UtcNow;
 
         public DateTime? ProcessedDate { get; set; }
 

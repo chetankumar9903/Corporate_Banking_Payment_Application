@@ -13,12 +13,6 @@ namespace Corporate_Banking_Payment_Application.Services
         private readonly IUserRepository _userRepo;
         private readonly IBankRepository _bankRepo;
 
-        //public CustomerService(ICustomerRepository repo, IMapper mapper)
-        //{
-        //    _repo = repo;
-        //    _mapper = mapper;
-        //}
-
         public CustomerService(ICustomerRepository customerRepo, IUserRepository userRepo, IBankRepository bankRepo, IMapper mapper)
         {
             _customerRepo = customerRepo;
@@ -41,9 +35,6 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<CustomerDto> CreateCustomer(CreateCustomerDto dto)
         {
-            //var entity = _mapper.Map<Customer>(dto);
-            //var created = await _customerRepo.AddCustomer(entity);
-            //return _mapper.Map<CustomerDto>(created);
 
             // Validate User
             var user = await _userRepo.GetUserById(dto.UserId);
@@ -87,7 +78,7 @@ namespace Corporate_Banking_Payment_Application.Services
         }
 
 
-        // ✅ Update Verification Status
+        // Update Verification Status
         public async Task<CustomerDto> UpdateStatus(int id, Status newStatus)
         {
             var customer = await _customerRepo.GetCustomerById(id);
@@ -100,7 +91,7 @@ namespace Corporate_Banking_Payment_Application.Services
         }
 
 
-        // ✅ Delete (Soft Delete recommended)
+        // Delete (Soft Delete recommended)
         //public async Task<bool> DeleteAsync(int id)
         //{
         //    var customer = await _customerRepo.GetCustomerById(id);

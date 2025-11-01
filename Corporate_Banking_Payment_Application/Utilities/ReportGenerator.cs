@@ -15,14 +15,8 @@ namespace Corporate_Banking_Payment_Application.Utilities
     {
         private const string DefaultReportTitle = "Corporate Banking Application Report";
 
-        /// <summary>
+
         /// Generates a report file (Excel or PDF) from a collection of data objects.
-        /// </summary>
-        /// <typeparam name="T">The data model type (e.g., Payment, SalaryDisbursement).</typeparam>
-        /// <param name="data">The list of data objects to include in the report.</param>
-        /// <param name="format">The desired output format (PDF or EXCEL).</param>
-        /// <param name="reportType">The type of content (e.g., PAYMENT, SALARY) for titling.</param>
-        /// <returns>A MemoryStream containing the generated file content.</returns>
         public static MemoryStream Generate<T>(
             IEnumerable<T> data,
             ReportOutputFormat format,
@@ -49,9 +43,7 @@ namespace Corporate_Banking_Payment_Application.Utilities
 
         // --- Private Generation Methods ---
 
-        /// <summary>
         /// Generates an Excel file using EPPlus.
-        /// </summary>
         private static MemoryStream GenerateExcel<T>(IEnumerable<T> data, PropertyInfo[] properties, string title)
         {
             // Set the license context for EPPlus
@@ -91,9 +83,7 @@ namespace Corporate_Banking_Payment_Application.Utilities
             return stream;
         }
 
-        /// <summary>
         /// Generates a PDF file using iTextSharp.
-        /// </summary>
         private static MemoryStream GeneratePdf<T>(IEnumerable<T> data, PropertyInfo[] properties, string title)
         {
             var stream = new MemoryStream();

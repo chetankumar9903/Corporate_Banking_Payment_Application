@@ -93,5 +93,22 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPatch("{id}/balance")]
+        public async Task<IActionResult> UpdateBalance(int id, [FromBody] UpdateClientBalanceDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            try
+            {
+                var result = await _service.UpdateClientBalance(id, dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Catches errors like "Insufficient funds"
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

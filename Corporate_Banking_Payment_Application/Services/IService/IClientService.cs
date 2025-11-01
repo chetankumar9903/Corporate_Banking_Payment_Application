@@ -1,5 +1,4 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
-
 namespace Corporate_Banking_Payment_Application.Services.IService
 {
     public interface IClientService
@@ -20,5 +19,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<bool> DeleteClient(int id);
 
         Task<ClientDto?> GetClientByCustomerId(int customerId);
+
+        Task<ClientDto> UpdateClientBalance(int clientId, UpdateClientBalanceDto dto);
     }
 }

@@ -44,20 +44,6 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task DeleteBank(Bank bank)
         {
-
-            //        var bank = await _context.Banks
-            //.Include(b => b.Customers)
-            //.FirstOrDefaultAsync(b => b.BankId == id);
-
-            //        if (bank == null)
-            //            throw new Exception("Bank not found");
-
-            //        if (bank.Customers.Any())
-            //            throw new Exception("Cannot delete bank with existing customers.");
-
-            //        _context.Banks.Remove(bank);
-            //        await _context.SaveChangesAsync();
-
             _context.Banks.Remove(bank);
             await _context.SaveChangesAsync();
         }

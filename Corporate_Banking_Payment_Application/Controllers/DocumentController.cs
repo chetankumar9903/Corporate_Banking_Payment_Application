@@ -6,9 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Corporate_Banking_Payment_Application.Controllers
 {
-    // *** NEW MODEL TO RESOLVE SWAGGER ERROR ***
-    // This model combines the IFormFile and the metadata DTO fields 
-    // into a single object for the [FromForm] binding to work correctly with Swashbuckle.
+
     public class DocumentUploadRequest
     {
         // Metadata fields from CreateDocumentDto
@@ -22,7 +20,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         [Required]
         public IFormFile? File { get; set; }
     }
-    // ******************************************
+
 
     [ApiController]
     [Route("api/[controller]")] // Routes to /api/Document
@@ -35,9 +33,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        /// <summary>
-        /// Retrieves all document metadata for the application. (Use sparingly, primarily for admin/auditing).
-        /// </summary>
+        //Retrieves all document metadata for the application. (Use sparingly, primarily for admin/auditing).
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[Authorize(Roles = "BANKUSER")]
@@ -47,10 +43,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(documents);
         }
 
-        /// <summary>
         /// Retrieves all documents associated with a specific Customer ID.
-        /// </summary>
-        /// <param name="customerId">The ID of the Customer whose documents are to be retrieved.</param>
         [HttpGet("customer/{customerId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDocumentsByCustomerId(int customerId)
@@ -59,10 +52,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(documents);
         }
 
-        /// <summary>
         /// Retrieves metadata for a specific document by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the document.</param>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,16 +63,12 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(document);
         }
 
-        /// <summary>
         /// Uploads a new document to Cloudinary and saves its reference to the database.
-        /// </summary>
-        /// <param name="request">Contains the file content (IFormFile) and metadata (CustomerId, DocumentType).</param>
         //[Authorize(Roles = "BANKUSER")]
         [HttpPost("upload")]
         [Consumes("multipart/form-data")] // Essential for Swagger/Postman to recognize file upload
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // FIX: Combine IFormFile and DTO into a single class for Swashbuckle compatibility
         public async Task<IActionResult> UploadDocument([FromForm] DocumentUploadRequest request)
         {
             // ModelState validation is handled on the DocumentUploadRequest model
@@ -121,11 +107,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        /// <summary>
         /// Updates a document record (e.g., changing its status).
-        /// </summary>
-        /// <param name="id">The ID of the document to update.</param>
-        /// <param name="dto">The update DTO (e.g., IsActive status).</param>
         //[Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -142,10 +124,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
-        /// <summary>
         /// Deletes the document record and the corresponding file from Cloudinary.
-        /// </summary>
-        /// <param name="id">The ID of the document to delete.</param>
         //[Authorize(Roles = "BANKUSER")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -33,13 +33,6 @@ namespace Corporate_Banking_Payment_Application.Repository
                 .ToListAsync();
         }
 
-        //public async Task<BatchTransaction?> GetById(int id)
-        //{
-        //    return await _context.BatchTransactions
-        //        .Include(b => b.Client)
-        //        .Include(b => b.SalaryDisbursements)
-        //        .FirstOrDefaultAsync(b => b.BatchId == id);
-        //}
 
         public async Task<BatchTransaction?> GetById(int id)
         {
@@ -50,8 +43,6 @@ namespace Corporate_Banking_Payment_Application.Repository
                 .FirstOrDefaultAsync(b => b.BatchId == id);
         }
 
-        //public async Task<IEnumerable<BatchTransaction>> GetByClientId(int clientId) =>
-        //   await BaseQuery().Where(b => b.ClientId == clientId).AsNoTracking().ToListAsync();
         public async Task<IEnumerable<BatchTransaction>> GetByClientId(int clientId)
         {
             return await _context.BatchTransactions

@@ -149,6 +149,10 @@ namespace Corporate_Banking_Payment_Application.Data
             modelBuilder.Entity<Report>()
                 .Property(r => r.ReportType)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<Report>()
+            .Property(r => r.OutputFormat)
+            .HasConversion<string>();
         }
     }
 }

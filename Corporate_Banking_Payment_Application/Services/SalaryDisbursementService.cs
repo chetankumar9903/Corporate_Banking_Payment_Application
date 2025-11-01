@@ -93,50 +93,8 @@ namespace Corporate_Banking_Payment_Application.Services
                     ?? throw new Exception($"Batch with ID {dto.BatchId} not found.");
             }
 
-            //// 5️⃣ Create SalaryDisbursement entity
-            //var salaryDisbursement = new SalaryDisbursement
-            //{
-            //    ClientId = dto.ClientId,
-            //    EmployeeId = dto.EmployeeId,
-            //    Amount = dto.Amount,
-            //    Description = dto.Description,
-            //    BatchId = dto.BatchId,
-            //    Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
-            //            TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"))
-            //};
 
-            //// Deduct from client and add to employee
-            //client.Balance -= dto.Amount;
-            //employee.Balance += dto.Amount;
-
-            //await _clientRepo.UpdateClient(client);
-            //await _employeeRepo.UpdateEmployee(employee);
-
-
-
-            ////var entity = _mapper.Map<SalaryDisbursement>(dto);
-            ////entity.Date = TimeZoneInfo.ConvertTimeFromUtc(
-            ////    DateTime.UtcNow,
-            ////    TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
-            ////);
-
-            ////var created = await _repo.Add(entity);
-            ////return _mapper.Map<SalaryDisbursementDto>(created);
-
-            //var created = await _repo.Add(salaryDisbursement);
-
-            //// 8️⃣ If part of batch, update batch totals
-            //if (batch != null)
-            //{
-            //    batch.TotalTransactions += 1;
-            //    batch.TotalAmount += dto.Amount;
-            //    await _batchRepo.Update(batch);
-            //}
-
-            //return _mapper.Map<SalaryDisbursementDto>(created);
-
-
-            // 🔐 Transaction ensures atomic client-employee update
+            // Transaction ensures atomic client-employee update
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try

@@ -8,23 +8,6 @@ namespace Corporate_Banking_Payment_Application.Mapping
     {
         public SalaryDisbursementMappingProfile()
         {
-            // Model → DTO
-            //CreateMap<SalaryDisbursement, SalaryDisbursementDto>()
-            //    .ForMember(dest => dest.EmployeeName,
-            //               opt => opt.MapFrom(src => src.Employee != null
-            //                   ? $"{src.Employee.FirstName} {src.Employee.LastName}"
-            //                   : null))
-            //    .ForMember(dest => dest.ClientCompanyName,
-            //               opt => opt.MapFrom(src => src.Client != null
-            //                   ? src.Client.CompanyName
-            //                   : null));
-
-            //// DTO → Model
-            //CreateMap<CreateSalaryDisbursementDto, SalaryDisbursement>();
-            //CreateMap<UpdateSalaryDisbursementDto, SalaryDisbursement>()
-            //    .ForAllMembers(opt => opt.Condition(
-            //        (src, dest, srcMember) => srcMember != null
-            //    ));
 
             // Entity → DTO
             CreateMap<SalaryDisbursement, SalaryDisbursementDto>()

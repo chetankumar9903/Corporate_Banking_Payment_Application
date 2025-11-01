@@ -41,37 +41,31 @@ namespace Corporate_Banking_Payment_Application.Services
         public async Task<PaymentDto> CreatePayment(CreatePaymentDto dto)
         {
             //// Note: In a real-world scenario, you would add validation here
-            //// to ensure both ClientId and BeneficiaryId exist before proceeding.
+            //// to ensure both ClientId and BeneficiaryId exist before proceeding
 
-            //var payment = _mapper.Map<Payment>(dto);
-            //// The model sets RequestDate and PaymentStatus defaults.
-
-            //var created = await _paymentRepo.AddPayment(payment);
-            //return _mapper.Map<PaymentDto>(created);
-
-            // 1️⃣ Check client exists
+            // 1️ Check client exists
             var client = await _clientRepo.GetClientById(dto.ClientId)
                 ?? throw new Exception($"Client with ID {dto.ClientId} not found.");
 
             if (!client.IsActive)
                 throw new Exception("Client account is inactive. Cannot initiate payment.");
 
-            // 2️⃣ Check beneficiary exists
+            // 2️ Check beneficiary exists
             var beneficiary = await _beneficiaryRepo.GetBeneficiaryById(dto.BeneficiaryId)
                 ?? throw new Exception($"Beneficiary with ID {dto.BeneficiaryId} not found.");
 
             if (!beneficiary.IsActive)
                 throw new Exception("Beneficiary is inactive. Cannot make payment.");
 
-            // 3️⃣ Ensure beneficiary belongs to this client
+            // 3️ Ensure beneficiary belongs to this client
             if (beneficiary.ClientId != dto.ClientId)
                 throw new Exception("Unauthorized: Beneficiary does not belong to this client.");
 
-            // 4️⃣ Check sufficient client balance
+            // 4️ Check sufficient client balance
             if (client.Balance < dto.Amount)
                 throw new Exception("Insufficient balance to process this payment request.");
 
-            // 5️⃣ Prevent duplicate pending payment for same beneficiary and amount
+            // 5️ Prevent duplicate pending payment for same beneficiary and amount
             var existingPayments = await _paymentRepo.GetPaymentsByClientId(dto.ClientId);
             if (existingPayments.Any(p => p.BeneficiaryId == dto.BeneficiaryId &&
                                           p.Amount == dto.Amount &&
@@ -80,7 +74,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 throw new Exception("Duplicate pending payment detected for the same beneficiary and amount.");
             }
 
-            // 6️⃣ Create the payment entity
+            // 6️ Create the payment entity
             var payment = _mapper.Map<Payment>(dto);
             payment.RequestDate = TimeZoneInfo.ConvertTimeFromUtc(
                 DateTime.UtcNow,
@@ -88,7 +82,7 @@ namespace Corporate_Banking_Payment_Application.Services
             );
             payment.PaymentStatus = Status.PENDING;
 
-            // 7️⃣ Save payment
+            // 7️ Save payment
             var created = await _paymentRepo.AddPayment(payment);
 
             return _mapper.Map<PaymentDto>(created);
@@ -96,49 +90,21 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<PaymentDto?> UpdatePayment(int id, UpdatePaymentDto dto)
         {
-            //        var existing = await _paymentRepo.GetPaymentById(id);
-            //        if (existing == null) return null;
-
-            //        // Business Rule: A payment can only be modified (status updated) if it is PENDING.
-            //        // This is a common pattern to prevent updating payments that are already processed.
-            //        if (existing.PaymentStatus != Status.PENDING)
-            //        {
-            //            // This is a status update, but for security, we only allow updating status
-            //            // if the payment is still pending. If the service needs to update status
-            //            // from PENDING to APPROVED/REJECTED, this check is still valid.
-            //            // For demonstration, we allow status update regardless of the current status, 
-            //            // but enforce setting ProcessedDate if the status changes away from PENDING.
-
-            //            if (dto.PaymentStatus.HasValue && dto.PaymentStatus.Value != Status.PENDING && existing.PaymentStatus == Status.PENDING)
-            //            {
-            //                // If moving from PENDING to APPROVED or REJECTED, set the ProcessedDate
-            //                existing.ProcessedDate = TimeZoneInfo.ConvertTimeFromUtc(
-            //    DateTime.UtcNow,
-            //    TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
-            //);
-            //            }
-            //        }
-
-            //        // Apply updates from DTO to the existing entity
-            //        _mapper.Map(dto, existing);
-
-            //        await _paymentRepo.UpdatePayment(existing);
-            //        return _mapper.Map<PaymentDto>(existing);
 
             var existing = await _paymentRepo.GetPaymentById(id)
        ?? throw new Exception($"Payment with ID {id} not found.");
 
-            // ✅ Allow only pending payments to be updated
+            // Allow only pending payments to be updated
             if (existing.PaymentStatus != Status.PENDING)
                 throw new Exception("Only pending payments can be updated.");
 
-            // ✅ Validate new status
+            // Validate new status
             if (!dto.PaymentStatus.HasValue)
                 throw new Exception("Payment status update is required.");
 
             var newStatus = dto.PaymentStatus.Value;
 
-            // ✅ Process transitions
+            // Process transitions
             if (newStatus == Status.APPROVED)
             {
                 var client = await _clientRepo.GetClientById(existing.ClientId)

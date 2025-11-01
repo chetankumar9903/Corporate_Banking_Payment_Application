@@ -63,13 +63,6 @@ namespace Corporate_Banking_Payment_Application.Repository
             return entity;
         }
 
-        //public async Task<SalaryDisbursement> Update(SalaryDisbursement entity)
-        //{
-        //    _context.SalaryDisbursements.Update(entity);
-        //    await _context.SaveChangesAsync();
-        //    return entity;
-        //}
-
 
         public async Task Update(SalaryDisbursement entity)
         {
@@ -77,14 +70,7 @@ namespace Corporate_Banking_Payment_Application.Repository
             await _context.SaveChangesAsync();
 
         }
-        //public async Task<bool> Delete(int id)
-        //{
-        //    var existing = await _context.SalaryDisbursements.FindAsync(id);
-        //    if (existing == null) return false;
-        //    _context.SalaryDisbursements.Remove(existing);
-        //    await _context.SaveChangesAsync();
-        //    return true;
-        //}
+
 
         public async Task Delete(SalaryDisbursement entity)
         {
