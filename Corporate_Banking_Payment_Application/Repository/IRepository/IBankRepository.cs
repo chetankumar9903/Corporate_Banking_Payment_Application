@@ -11,5 +11,6 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
         Task UpdateBank(Bank bank);
         Task DeleteBank(Bank bank);
         Task<bool> ExistsBank(int id);
+        Task<Bank?> GetBankByUsername(string username);
     }
 }

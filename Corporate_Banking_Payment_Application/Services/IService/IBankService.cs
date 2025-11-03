@@ -11,5 +11,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<BankDto> CreateBank(CreateBankDto dto);
         Task<BankDto?> UpdateBank(int id, UpdateBankDto dto);
         Task<bool> DeleteBank(int id);
+
+        Task<BankDto?> GetBankByUsername(string username);
     }
 }
