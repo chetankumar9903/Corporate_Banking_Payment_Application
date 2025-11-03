@@ -233,7 +233,7 @@ namespace Corporate_Banking_Payment_Application
                 });
             }
 
-            //app.UseCors("MyPolicy");
+            app.UseCors("MyPolicy");
             app.UseHttpsRedirection();
 
             //app.UseAuthorization();
