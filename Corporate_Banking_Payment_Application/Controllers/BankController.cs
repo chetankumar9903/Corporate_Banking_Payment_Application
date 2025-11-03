@@ -88,5 +88,16 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("by-username/{username}")]
+        public async Task<IActionResult> GetBankByUsername(string username)
+        {
+            var bank = await _service.GetBankByUsername(username);
+            if (bank == null)
+            {
+                return NotFound(new { message = "No bank account is associated with this user." });
+            }
+            return Ok(bank);
+        }
     }
 }

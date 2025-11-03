@@ -120,5 +120,12 @@ namespace Corporate_Banking_Payment_Application.Repository
         {
             return await _context.Banks.AnyAsync(b => b.BankId == id);
         }
+
+        public async Task<Bank?> GetBankByUsername(string username)
+        {
+            return await _context.Banks
+                .Include(b => b.User) // We must include the User to search
+                .FirstOrDefaultAsync(b => b.User != null && b.User.UserName == username);
+        }
     }
 }

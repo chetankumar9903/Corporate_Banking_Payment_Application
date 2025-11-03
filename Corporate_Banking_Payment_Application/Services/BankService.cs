@@ -76,5 +76,11 @@ namespace Corporate_Banking_Payment_Application.Services
             await _bankRepo.DeleteBank(bank);
             return true;
         }
+
+        public async Task<BankDto?> GetBankByUsername(string username)
+        {
+            var bank = await _bankRepo.GetBankByUsername(username);
+            return _mapper.Map<BankDto?>(bank);
+        }
     }
 }
