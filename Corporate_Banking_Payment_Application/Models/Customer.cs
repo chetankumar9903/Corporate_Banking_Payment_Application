@@ -15,7 +15,6 @@ namespace Corporate_Banking_Payment_Application.Models
         public int BankId { get; set; }
 
         [Required]
-        //public DateTime OnboardingDate { get; set; } = DateTime.UtcNow;
         public DateTime OnboardingDate { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(
         DateTime.UtcNow,
         TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")

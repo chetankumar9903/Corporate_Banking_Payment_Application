@@ -27,9 +27,6 @@ namespace Corporate_Banking_Payment_Application.Models
         public string? IfscCode { get; set; }
 
 
-        //[Required]
-        //public decimal Balance { get; set; } = 0;
-
         [EmailAddress]
         [StringLength(100)]
         public string? Email { get; set; }
@@ -52,9 +49,6 @@ namespace Corporate_Banking_Payment_Application.Models
         [ForeignKey("ClientId")]
         public Client? Client { get; set; }
 
-
-        // Navigation
-        //public ICollection<ClientBeneficiary>? ClientBeneficiaries { get; set; }
         public ICollection<Payment>? Payments { get; set; }
     }
 }

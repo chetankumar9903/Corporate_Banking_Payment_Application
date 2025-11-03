@@ -13,9 +13,76 @@ namespace Corporate_Banking_Payment_Application.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsers()
+        //public async Task<IEnumerable<User>> GetAllUsers()
+        //{
+        //    return await _context.Users.AsNoTracking().ToListAsync();
+        //}
+
+        public async Task<PagedResult<User>> GetAllUsers(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            return await _context.Users.AsNoTracking().ToListAsync();
+            var query = _context.Users.AsNoTracking();
+
+            // 1. SEARCHING
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(u =>
+                    u.UserName.ToLower().Contains(searchTerm) ||
+                    u.FirstName.ToLower().Contains(searchTerm) ||
+                    u.LastName.ToLower().Contains(searchTerm) ||
+                    u.EmailId.ToLower().Contains(searchTerm)
+                );
+            }
+
+            // Get TOTAL COUNT *after* searching, *before* sorting/pagination
+            var totalCount = await query.CountAsync();
+
+            // 2. SORTING
+            bool isDescending = sortOrder == SortOrder.DESC;
+
+            // Sort logic
+            if (!string.IsNullOrWhiteSpace(sortColumn))
+            {
+                switch (sortColumn.ToLower())
+                {
+                    case "username":
+                        query = isDescending ? query.OrderByDescending(u => u.UserName) : query.OrderBy(u => u.UserName);
+                        break;
+                    case "firstname":
+                        query = isDescending ? query.OrderByDescending(u => u.FirstName) : query.OrderBy(u => u.FirstName);
+                        break;
+                    case "lastname":
+                        query = isDescending ? query.OrderByDescending(u => u.LastName) : query.OrderBy(u => u.LastName);
+                        break;
+                    case "email":
+                        query = isDescending ? query.OrderByDescending(u => u.EmailId) : query.OrderBy(u => u.EmailId);
+                        break;
+                    case "userrole":
+                        query = isDescending ? query.OrderByDescending(u => u.UserRole) : query.OrderBy(u => u.UserRole);
+                        break;
+                    default:
+                        // Default sort column if specified column is invalid
+                        query = query.OrderBy(u => u.UserName);
+                        break;
+                }
+            }
+            else
+            {
+                // Default sort if no column is specified
+                query = query.OrderBy(u => u.UserName);
+            }
+
+            // 3. PAGINATION
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<User>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<User?> GetUserById(int id)

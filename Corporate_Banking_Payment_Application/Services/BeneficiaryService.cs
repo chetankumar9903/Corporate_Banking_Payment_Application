@@ -22,10 +22,23 @@ namespace Corporate_Banking_Payment_Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BeneficiaryDto>> GetAllBeneficiaries()
+        //public async Task<IEnumerable<BeneficiaryDto>> GetAllBeneficiaries()
+        //{
+        //    var beneficiaries = await _beneficiaryRepo.GetAllBeneficiaries();
+        //    return _mapper.Map<IEnumerable<BeneficiaryDto>>(beneficiaries);
+        //}
+
+        public async Task<PagedResult<BeneficiaryDto>> GetAllBeneficiaries(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var beneficiaries = await _beneficiaryRepo.GetAllBeneficiaries();
-            return _mapper.Map<IEnumerable<BeneficiaryDto>>(beneficiaries);
+            var pagedResult = await _beneficiaryRepo.GetAllBeneficiaries(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
+            var itemsDto = _mapper.Map<IEnumerable<BeneficiaryDto>>(pagedResult.Items);
+
+            return new PagedResult<BeneficiaryDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<BeneficiaryDto?> GetBeneficiaryById(int id)

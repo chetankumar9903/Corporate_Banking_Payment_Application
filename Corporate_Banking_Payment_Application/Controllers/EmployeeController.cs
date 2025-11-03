@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,20 +17,27 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        /// <summary>
-        /// Retrieves a list of all employees.
-        /// </summary>
+        ///// Retrieves a list of all employees.
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllEmployees()
+        //{
+        //    var employees = await _service.GetAllEmployees();
+        //    return Ok(employees);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAllEmployees()
+        public async Task<IActionResult> GetAllEmployees(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var employees = await _service.GetAllEmployees();
+            var employees = await _service.GetAllEmployees(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(employees);
         }
 
-        /// <summary>
         /// Retrieves a specific employee by ID.
-        /// </summary>
-        /// <param name="id">The ID of the employee.</param>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById(int id)
         {
@@ -38,11 +46,9 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(employee);
         }
 
-        /// <summary>
+
         /// Creates a new employee record.
-        /// </summary>
-        /// <param name="dto">The data transfer object for creating an employee.</param>
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeDto dto)
         {
@@ -61,12 +67,9 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        /// <summary>
+        
         /// Updates an existing employee record.
-        /// </summary>
-        /// <param name="id">The ID of the employee to update.</param>
-        /// <param name="dto">The data transfer object for updating an employee.</param>
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
         {
@@ -78,11 +81,9 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(updated);
         }
 
-        /// <summary>
-        /// Deletes a specific employee record.
-        /// </summary>
-        /// <param name="id">The ID of the employee to delete.</param>
-        [Authorize(Roles = "CLIENTUSER")]
+       
+        /// Deletes a specific employee record
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {

@@ -31,10 +31,6 @@ namespace Corporate_Banking_Payment_Application.Mapping
                 // which is acceptable if the status is changing from REJECTED back to PENDING/APPROVED (though rare).
                 .ForMember(dest => dest.RejectReason,
                            opt => opt.MapFrom(src => src.RejectReason));
-
-            // Importantly, properties like Amount, ClientId, BeneficiaryId, and RequestDate
-            // are NOT mapped from the UpdatePaymentDto, ensuring they remain unchanged 
-            // as per your requirements.
         }
     }
 }

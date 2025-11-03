@@ -6,7 +6,8 @@ namespace Corporate_Banking_Payment_Application.Services.IService
     public interface IPaymentService
     {
         // CRUD Operations
-        Task<IEnumerable<PaymentDto>> GetAllPayments();
+        //Task<IEnumerable<PaymentDto>> GetAllPayments();
+        Task<PagedResult<PaymentDto>> GetAllPayments(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize);
         Task<PaymentDto?> GetPaymentById(int id);
         Task<PaymentDto> CreatePayment(CreatePaymentDto dto);
         Task<PaymentDto?> UpdatePayment(int id, UpdatePaymentDto dto);

@@ -18,11 +18,24 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
+        //[HttpGet]
+        ////[Authorize(Roles = "BANKUSER")]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var result = await _service.GetAllCustomers();
+        //    return Ok(result);
+        //}
+
         [HttpGet]
-        [Authorize(Roles = "BANKUSER")]
-        public async Task<IActionResult> GetAll()
+        //[Authorize(Roles = "BANKUSER")]
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var result = await _service.GetAllCustomers();
+            var result = await _service.GetAllCustomers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(result);
         }
 
@@ -33,7 +46,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             if (result == null) return NotFound();
             return Ok(result);
         }
-        [Authorize(Roles = "BANKUSER")]
+        //[Authorize(Roles = "BANKUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCustomerDto dto)
         {
@@ -52,7 +65,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        [Authorize(Roles = "BANKUSER")]
+        //[Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomerDto dto)
         {
@@ -73,7 +86,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
         }
 
-        [Authorize(Roles = "BANKUSER")]
+        //[Authorize(Roles = "BANKUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -82,7 +95,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "BANKUSER")]
+        //[Authorize(Roles = "BANKUSER")]
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] Status newStatus)
         {

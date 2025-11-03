@@ -8,9 +8,6 @@ namespace Corporate_Banking_Payment_Application.Mapping
     {
         public UserMappingProfile()
         {
-            //CreateMap<User, UserDto>();
-            //CreateMap<CreateUserDto, User>();
-            //CreateMap<UpdateUserDto, User>();
 
             // User -> UserDto
             CreateMap<User, UserDto>()

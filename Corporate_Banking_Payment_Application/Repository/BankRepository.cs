@@ -14,12 +14,80 @@ namespace Corporate_Banking_Payment_Application.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Bank>> GetAllBank()
+        //public async Task<IEnumerable<Bank>> GetAllBank()
+        //{
+        //    return await _context.Banks
+        //        .Include(b => b.User)
+        //        .AsNoTracking()
+        //        .ToListAsync();
+        //}
+
+        public async Task<PagedResult<Bank>> GetAllBank(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            return await _context.Banks
+            // Base query MUST include dependencies for searching and sorting
+            var query = _context.Banks
                 .Include(b => b.User)
-                .AsNoTracking()
+                .AsNoTracking();
+
+            // 1. SEARCHING
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(b =>
+                    b.BankName.ToLower().Contains(searchTerm) ||
+                    b.Branch.ToLower().Contains(searchTerm) ||
+                    b.IFSCCode.ToLower().Contains(searchTerm) ||
+                    (b.User != null && (
+                        b.User.UserName.ToLower().Contains(searchTerm) ||
+                        b.User.FirstName.ToLower().Contains(searchTerm) ||
+                        b.User.LastName.ToLower().Contains(searchTerm)
+                    ))
+                );
+            }
+
+            // Get TOTAL COUNT *after* searching
+            var totalCount = await query.CountAsync();
+
+            // 2. SORTING
+            bool isDescending = sortOrder == SortOrder.DESC;
+
+            if (!string.IsNullOrWhiteSpace(sortColumn))
+            {
+                // Adhering to the rule of using lowercase property names
+                switch (sortColumn.ToLower())
+                {
+                    case "branch":
+                        query = isDescending ? query.OrderByDescending(b => b.Branch) : query.OrderBy(b => b.Branch);
+                        break;
+                    case "ifsccode":
+                        query = isDescending ? query.OrderByDescending(b => b.IFSCCode) : query.OrderBy(b => b.IFSCCode);
+                        break;
+                    case "lastname": // User's last name
+                        query = isDescending ? query.OrderByDescending(b => b.User.LastName) : query.OrderBy(b => b.User.LastName);
+                        break;
+                    case "bankname":
+                    default:
+                        query = isDescending ? query.OrderByDescending(b => b.BankName) : query.OrderBy(b => b.BankName);
+                        break;
+                }
+            }
+            else
+            {
+                // Default sort
+                query = query.OrderBy(b => b.BankName);
+            }
+
+            // 3. PAGINATION
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return new PagedResult<Bank>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<Bank?> GetBankById(int id)
@@ -44,20 +112,6 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task DeleteBank(Bank bank)
         {
-
-            //        var bank = await _context.Banks
-            //.Include(b => b.Customers)
-            //.FirstOrDefaultAsync(b => b.BankId == id);
-
-            //        if (bank == null)
-            //            throw new Exception("Bank not found");
-
-            //        if (bank.Customers.Any())
-            //            throw new Exception("Cannot delete bank with existing customers.");
-
-            //        _context.Banks.Remove(bank);
-            //        await _context.SaveChangesAsync();
-
             _context.Banks.Remove(bank);
             await _context.SaveChangesAsync();
         }

@@ -21,11 +21,24 @@ namespace Corporate_Banking_Payment_Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllEmployees()
+        //public async Task<IEnumerable<EmployeeDto>> GetAllEmployees()
+        //{
+        //    var employees = await _employeeRepo.GetAllEmployees();
+        //    // Map the collection of Employee models to EmployeeDto DTOs
+        //    return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+        //}
+
+        public async Task<PagedResult<EmployeeDto>> GetAllEmployees(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var employees = await _employeeRepo.GetAllEmployees();
-            // Map the collection of Employee models to EmployeeDto DTOs
-            return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+            var pagedResult = await _employeeRepo.GetAllEmployees(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
+            var itemsDto = _mapper.Map<IEnumerable<EmployeeDto>>(pagedResult.Items);
+
+            return new PagedResult<EmployeeDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<EmployeeDto?> GetEmployeeById(int id)
@@ -37,18 +50,6 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<EmployeeDto> CreateEmployee(CreateEmployeeDto dto)
         {
-            //// 1. Map the DTO to the Model
-            //var employee = _mapper.Map<Employee>(dto);
-
-            //// Note: If you had GetEmployeeByCode, you would check for duplicates here
-
-            //// 2. Add the Model via the repository
-            //var created = await _employeeRepo.AddEmployee(employee);
-
-            //// 3. Map the created Model back to the DTO for the response
-            //return _mapper.Map<EmployeeDto>(created);
-
-
 
             var client = await _clientRepo.GetClientById(dto.ClientId);
             if (client == null)
@@ -64,20 +65,9 @@ namespace Corporate_Banking_Payment_Application.Services
 
             var created = await _employeeRepo.AddEmployee(employee);
 
-            // Generate employee code if not manually provided
-            //if (string.IsNullOrWhiteSpace(dto.EmployeeCode))
-            //created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(dto.ClientId);
-
-            //if (string.IsNullOrWhiteSpace(created.EmployeeCode))
-            //    created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(dto.ClientId);
-
 
             if (string.IsNullOrWhiteSpace(created.EmployeeCode))
                 created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, created.EmployeeId);
-
-
-            // Generate employee bank account (based on Client’s account prefix)
-            //created.AccountNumber = AccountNumberGenerator.GenerateAccountNumber("EMP", employee.EmployeeId);
 
             // account number using  client bank name
             created.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, created.EmployeeId);

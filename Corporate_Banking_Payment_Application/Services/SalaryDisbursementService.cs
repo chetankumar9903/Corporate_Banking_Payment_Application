@@ -32,10 +32,21 @@ namespace Corporate_Banking_Payment_Application.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<SalaryDisbursementDto>> GetAll()
+        //public async Task<IEnumerable<SalaryDisbursementDto>> GetAll()
+        //{
+        //    var data = await _repo.GetAll();
+        //    return _mapper.Map<IEnumerable<SalaryDisbursementDto>>(data);
+        //}
+
+        public async Task<PagedResult<SalaryDisbursementDto>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var data = await _repo.GetAll();
-            return _mapper.Map<IEnumerable<SalaryDisbursementDto>>(data);
+            var pagedResult = await _repo.GetAll(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+            var itemsDto = _mapper.Map<IEnumerable<SalaryDisbursementDto>>(pagedResult.Items);
+            return new PagedResult<SalaryDisbursementDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<SalaryDisbursementDto?> GetById(int id)
@@ -93,50 +104,8 @@ namespace Corporate_Banking_Payment_Application.Services
                     ?? throw new Exception($"Batch with ID {dto.BatchId} not found.");
             }
 
-            //// 5️⃣ Create SalaryDisbursement entity
-            //var salaryDisbursement = new SalaryDisbursement
-            //{
-            //    ClientId = dto.ClientId,
-            //    EmployeeId = dto.EmployeeId,
-            //    Amount = dto.Amount,
-            //    Description = dto.Description,
-            //    BatchId = dto.BatchId,
-            //    Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
-            //            TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"))
-            //};
 
-            //// Deduct from client and add to employee
-            //client.Balance -= dto.Amount;
-            //employee.Balance += dto.Amount;
-
-            //await _clientRepo.UpdateClient(client);
-            //await _employeeRepo.UpdateEmployee(employee);
-
-
-
-            ////var entity = _mapper.Map<SalaryDisbursement>(dto);
-            ////entity.Date = TimeZoneInfo.ConvertTimeFromUtc(
-            ////    DateTime.UtcNow,
-            ////    TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
-            ////);
-
-            ////var created = await _repo.Add(entity);
-            ////return _mapper.Map<SalaryDisbursementDto>(created);
-
-            //var created = await _repo.Add(salaryDisbursement);
-
-            //// 8️⃣ If part of batch, update batch totals
-            //if (batch != null)
-            //{
-            //    batch.TotalTransactions += 1;
-            //    batch.TotalAmount += dto.Amount;
-            //    await _batchRepo.Update(batch);
-            //}
-
-            //return _mapper.Map<SalaryDisbursementDto>(created);
-
-
-            // 🔐 Transaction ensures atomic client-employee update
+            // Transaction ensures atomic client-employee update
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try

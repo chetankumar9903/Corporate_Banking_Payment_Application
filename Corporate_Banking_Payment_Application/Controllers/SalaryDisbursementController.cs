@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,25 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var data = await _service.GetAll();
+        //    return Ok(data);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+           [FromQuery] string? searchTerm = null,
+           [FromQuery] string? sortColumn = null,
+           [FromQuery] SortOrder? sortOrder = null,
+           [FromQuery] int pageNumber = 1,
+           [FromQuery] int pageSize = 10)
         {
-            var data = await _service.GetAll();
+            var data = await _service.GetAll(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(data);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -44,7 +58,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             var result = await _service.GetByEmployeeId(employeeId);
             return Ok(result);
         }
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateSalaryDisbursementDto dto)
         {
@@ -63,7 +77,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSalaryDisbursementDto dto)
         {
@@ -76,7 +90,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             if (updated == null) return NotFound();
             return Ok(updated);
         }
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

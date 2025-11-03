@@ -73,8 +73,13 @@ namespace Corporate_Banking_Payment_Application
             builder.Services.AddScoped<IBatchTransactionRepository, BatchTransactionRepository>();
             builder.Services.AddScoped<IBatchTransactionService, BatchTransactionService>();
 
+            //Document
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
             builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+            //Report
+            builder.Services.AddScoped<IReportRepository, ReportRepository>();
+            builder.Services.AddScoped<IReportService, ReportService>();
 
             //authentication
             builder.Services.AddScoped<IAuthService, AuthService>();

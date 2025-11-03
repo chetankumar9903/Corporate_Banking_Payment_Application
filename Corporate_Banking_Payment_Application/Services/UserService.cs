@@ -17,10 +17,24 @@ namespace Corporate_Banking_Payment_Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsers()
+        //public async Task<IEnumerable<UserDto>> GetAllUsers()
+        //{
+        //    var users = await _userRepo.GetAllUsers();
+        //    return _mapper.Map<IEnumerable<UserDto>>(users);
+        //}
+
+        public async Task<PagedResult<UserDto>> GetAllUsers(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var users = await _userRepo.GetAllUsers();
-            return _mapper.Map<IEnumerable<UserDto>>(users);
+            //var pagedResult = await _userRepo.GetAllUsers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+            var pagedResult = await _userRepo.GetAllUsers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+            // Map the items on the current page to DTOs
+            var itemsDto = _mapper.Map<IEnumerable<UserDto>>(pagedResult.Items);
+
+            return new PagedResult<UserDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<UserDto?> GetUserById(int id)

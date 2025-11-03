@@ -1,4 +1,5 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
+using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,25 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var beneficiaries = await _service.GetAllBeneficiaries();
+        //    return Ok(beneficiaries);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? sortColumn = null,
+            [FromQuery] SortOrder? sortOrder = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var beneficiaries = await _service.GetAllBeneficiaries();
+            var beneficiaries = await _service.GetAllBeneficiaries(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
             return Ok(beneficiaries);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -47,7 +61,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBeneficiaryDto dto)
         {
@@ -64,7 +78,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBeneficiaryDto dto)
         {
@@ -82,7 +96,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

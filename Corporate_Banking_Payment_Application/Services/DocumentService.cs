@@ -29,10 +29,22 @@ namespace Corporate_Banking_Payment_Application.Services
 
         // --- Retrieval Operations ---
 
-        public async Task<IEnumerable<DocumentDto>> GetAllDocuments()
+        //public async Task<IEnumerable<DocumentDto>> GetAllDocuments()
+        //{
+        //    var documents = await _documentRepo.GetAllDocuments();
+        //    return _mapper.Map<IEnumerable<DocumentDto>>(documents);
+        //}
+        public async Task<PagedResult<DocumentDto>> GetAllDocuments(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var documents = await _documentRepo.GetAllDocuments();
-            return _mapper.Map<IEnumerable<DocumentDto>>(documents);
+            var pagedResult = await _documentRepo.GetAllDocuments(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
+            var itemsDto = _mapper.Map<IEnumerable<DocumentDto>>(pagedResult.Items);
+
+            return new PagedResult<DocumentDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<DocumentDto?> GetDocumentById(int id)
@@ -63,12 +75,12 @@ namespace Corporate_Banking_Payment_Application.Services
                 File = new FileDescription(file.FileName, file.OpenReadStream()),
                 // Define a public ID based on customer/type for organization and security
                 PublicId = $"customer-docs/{dto.CustomerId}/{dto.DocumentType}/{Guid.NewGuid()}",
-                Folder = "corporate_banking_app", // Optional folder structure
+                Folder = "corporate_banking_app_documents", // Optional folder structure
                 // Use "authenticated" type for sensitive banking documents
                 Type = "authenticated"
             };
 
-            // FIX: Changed ImageUploadResult to RawUploadResult as RawUploadParams was used.
+ 
             RawUploadResult uploadResult;
             try
             {

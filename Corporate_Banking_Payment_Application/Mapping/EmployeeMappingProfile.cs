@@ -26,8 +26,6 @@ namespace Corporate_Banking_Payment_Application.Mapping
                 .ForMember(dest => dest.IsActive,
                            opt => opt.Condition(src => src.IsActive.HasValue));
 
-            // Properties like JoinDate and AccountNumber are now automatically ignored 
-            // because they don't exist in the UpdateEmployeeDto.
         }
     }
 }

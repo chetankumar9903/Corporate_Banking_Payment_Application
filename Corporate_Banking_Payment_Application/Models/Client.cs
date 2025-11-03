@@ -36,10 +36,5 @@ namespace Corporate_Banking_Payment_Application.Models
         public ICollection<BatchTransaction>? BatchTransactions { get; set; }
         public ICollection<Beneficiary>? Beneficiaries { get; set; }
 
-        // ✅ Generate AccountNumber automatically
-        //public void GenerateAccountNumber()
-        //{
-        //    AccountNumber = $"AC-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
-        //}
     }
 }

@@ -16,32 +16,6 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public IEnumerable<SalaryDisbursementDto>? SalaryDisbursements { get; set; }
     }
 
-    // ✅ For Creating
-    //public class CreateBatchTransactionDto
-    //{
-    //    [Required]
-    //    public int ClientId { get; set; }
-
-    //    [Required]
-    //    public int TotalTransactions { get; set; }
-
-    //    [Required]
-    //    public decimal TotalAmount { get; set; }
-    //}
-
-    // ✅ For Creating a New Batch
-    //public class CreateBatchTransactionDto
-    //{
-    //    [Required]
-    //    public int ClientId { get; set; }
-
-    //    [Required]
-    //    public List<CreateSalaryDisbursementDto> Disbursements { get; set; } = new();
-
-    //    [MaxLength(200)]
-    //    public string? Description { get; set; }
-    //}
-
 
     public class CreateBatchTransactionDto
     {

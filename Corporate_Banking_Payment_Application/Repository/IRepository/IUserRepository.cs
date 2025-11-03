@@ -4,7 +4,9 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetAllUsers();
+        //Task<IEnumerable<User>> GetAllUsers();
+
+        Task<PagedResult<User>> GetAllUsers(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize);
         Task<User?> GetUserById(int id);
         Task<User> AddUser(User user);
         Task UpdateUser(User user);

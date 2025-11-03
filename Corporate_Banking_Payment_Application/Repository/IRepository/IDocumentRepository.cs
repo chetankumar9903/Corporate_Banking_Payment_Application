@@ -4,7 +4,8 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
     public interface IDocumentRepository
     {
         // CRUD Operations
-        Task<IEnumerable<Document>> GetAllDocuments();
+        //Task<IEnumerable<Document>> GetAllDocuments();
+        Task<PagedResult<Document>> GetAllDocuments(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize);
         Task<Document?> GetDocumentById(int id);
         Task<Document> AddDocument(Document document);
         Task UpdateDocument(Document document);

@@ -35,7 +35,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         public async Task<IActionResult> GetByClientId(int clientId)
             => Ok(await _service.GetByClientId(clientId));
 
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBatchTransactionDto dto)
         {
@@ -56,7 +56,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
         }
 
-        [Authorize(Roles = "CLIENTUSER")]
+        //[Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

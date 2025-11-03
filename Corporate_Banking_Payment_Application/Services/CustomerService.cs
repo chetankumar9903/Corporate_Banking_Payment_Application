@@ -13,12 +13,6 @@ namespace Corporate_Banking_Payment_Application.Services
         private readonly IUserRepository _userRepo;
         private readonly IBankRepository _bankRepo;
 
-        //public CustomerService(ICustomerRepository repo, IMapper mapper)
-        //{
-        //    _repo = repo;
-        //    _mapper = mapper;
-        //}
-
         public CustomerService(ICustomerRepository customerRepo, IUserRepository userRepo, IBankRepository bankRepo, IMapper mapper)
         {
             _customerRepo = customerRepo;
@@ -27,10 +21,24 @@ namespace Corporate_Banking_Payment_Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CustomerDto>> GetAllCustomers()
+        //public async Task<IEnumerable<CustomerDto>> GetAllCustomers()
+        //{
+        //    var customers = await _customerRepo.GetAllCustomers();
+        //    return _mapper.Map<IEnumerable<CustomerDto>>(customers);
+        //}
+
+        public async Task<PagedResult<CustomerDto>> GetAllCustomers(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            var customers = await _customerRepo.GetAllCustomers();
-            return _mapper.Map<IEnumerable<CustomerDto>>(customers);
+            var pagedResult = await _customerRepo.GetAllCustomers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
+            // Map the items on the current page to DTOs
+            var itemsDto = _mapper.Map<IEnumerable<CustomerDto>>(pagedResult.Items);
+
+            return new PagedResult<CustomerDto>
+            {
+                Items = itemsDto.ToList(),
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
         public async Task<CustomerDto?> GetCustomerById(int id)
@@ -41,9 +49,6 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<CustomerDto> CreateCustomer(CreateCustomerDto dto)
         {
-            //var entity = _mapper.Map<Customer>(dto);
-            //var created = await _customerRepo.AddCustomer(entity);
-            //return _mapper.Map<CustomerDto>(created);
 
             // Validate User
             var user = await _userRepo.GetUserById(dto.UserId);
@@ -87,7 +92,7 @@ namespace Corporate_Banking_Payment_Application.Services
         }
 
 
-        // ✅ Update Verification Status
+        // Update Verification Status
         public async Task<CustomerDto> UpdateStatus(int id, Status newStatus)
         {
             var customer = await _customerRepo.GetCustomerById(id);
@@ -100,7 +105,7 @@ namespace Corporate_Banking_Payment_Application.Services
         }
 
 
-        // ✅ Delete (Soft Delete recommended)
+        // Delete (Soft Delete recommended)
         //public async Task<bool> DeleteAsync(int id)
         //{
         //    var customer = await _customerRepo.GetCustomerById(id);
