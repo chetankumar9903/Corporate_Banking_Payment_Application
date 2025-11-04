@@ -3,6 +3,7 @@ using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Corporate_Banking_Payment_Application.Repository
 {
     public class PaymentRepository : IPaymentRepository
@@ -156,6 +157,7 @@ namespace Corporate_Banking_Payment_Application.Repository
                 .AsNoTracking()
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<Payment>> GetPaymentsByBeneficiaryId(int beneficiaryId)
         {

@@ -18,5 +18,6 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
         Task<User?> GetByEmail(string email);
         Task<IEnumerable<User>> GetAvailableClientUsers();
 
+        Task<IEnumerable<User>> GetUnassignedBankUsersAsync();
     }
 }

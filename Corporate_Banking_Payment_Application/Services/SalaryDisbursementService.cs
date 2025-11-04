@@ -38,9 +38,9 @@ namespace Corporate_Banking_Payment_Application.Services
         //    return _mapper.Map<IEnumerable<SalaryDisbursementDto>>(data);
         //}
 
-        public async Task<PagedResult<SalaryDisbursementDto>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
+        public async Task<PagedResult<SalaryDisbursementDto>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize, int? clientId)
         {
-            var pagedResult = await _repo.GetAll(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+            var pagedResult = await _repo.GetAll(searchTerm, sortColumn, sortOrder, pageNumber, pageSize, clientId);
             var itemsDto = _mapper.Map<IEnumerable<SalaryDisbursementDto>>(pagedResult.Items);
             return new PagedResult<SalaryDisbursementDto>
             {

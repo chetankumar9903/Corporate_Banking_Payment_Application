@@ -84,5 +84,22 @@ namespace Corporate_Banking_Payment_Application.Controllers
             var users = await _service.GetAvailableClientUsers();
             return Ok(users);
         }
+        //[HttpGet("bankusers")]
+        //public async Task<IActionResult> GetBankUsers()
+        //{
+        //    var users = await _service.GetAllUsers(); // returns all users
+        //    var bankUsers = users.Where(u => u.UserRole == UserRole.BANKUSER)
+        //                         .Select(u => new { u.UserId, u.UserName });
+        //    return Ok(bankUsers);
+        //}
+        [HttpGet("bankusers")]
+        public async Task<IActionResult> GetBankUsers()
+        {
+            var users = await _service.GetUnassignedBankUsersAsync();
+            var response = users.Select(u => new { u.UserId, u.UserName });
+            return Ok(response);
+        }
+
+
     }
 }

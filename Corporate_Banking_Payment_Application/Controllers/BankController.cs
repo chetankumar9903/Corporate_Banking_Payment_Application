@@ -51,6 +51,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         public async Task<IActionResult> CreateBank([FromBody] CreateBankDto dto)
         {
             if (!ModelState.IsValid)
+
                 return BadRequest(ModelState);
 
             try

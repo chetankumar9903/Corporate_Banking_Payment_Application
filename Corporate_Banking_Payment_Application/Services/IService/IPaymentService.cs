@@ -14,6 +14,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<bool> DeletePayment(int id);
 
         // Utility/Query Methods
+        //Task<IEnumerable<PaymentDto>> GetPaymentsByClientId(int clientId);
         Task<IEnumerable<PaymentDto>> GetPaymentsByClientId(int clientId);
         Task<IEnumerable<PaymentDto>> GetPaymentsByBeneficiaryId(int beneficiaryId);
         Task<IEnumerable<PaymentDto>> GetPaymentsByStatus(Status status);

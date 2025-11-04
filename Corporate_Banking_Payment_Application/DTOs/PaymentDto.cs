@@ -18,6 +18,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public int PaymentId { get; set; }
         public int ClientId { get; set; }
         public int BeneficiaryId { get; set; }
+
         public decimal Amount { get; set; }
         public DateTime RequestDate { get; set; }
         public DateTime? ProcessedDate { get; set; }

@@ -65,7 +65,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(payments);
         }
 
-  
+
         /// Retrieves payments based on their status (PENDING, APPROVED, REJECTED).
         [HttpGet("status/{status}")]
         public async Task<IActionResult> GetPaymentsByStatus(Status status)
@@ -129,5 +129,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             // 204 No Content is standard for successful deletion
             return NoContent();
         }
+
+
     }
 }

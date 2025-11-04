@@ -31,9 +31,13 @@ namespace Corporate_Banking_Payment_Application.Repository
         //        .ToListAsync();
         //}
 
-        public async Task<PagedResult<SalaryDisbursement>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
+        public async Task<PagedResult<SalaryDisbursement>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize, int? clientId = null)
         {
             var query = BaseQuery().AsNoTracking();
+            if (clientId.HasValue)
+            {
+                query = query.Where(s => s.ClientId == clientId.Value);
+            }
 
             // 1. SEARCHING
             if (!string.IsNullOrWhiteSpace(searchTerm))

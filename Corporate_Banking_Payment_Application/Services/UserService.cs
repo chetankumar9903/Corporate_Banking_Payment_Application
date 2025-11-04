@@ -79,5 +79,10 @@ namespace Corporate_Banking_Payment_Application.Services
             var users = await _userRepo.GetAvailableClientUsers();
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
+        public async Task<IEnumerable<User>> GetUnassignedBankUsersAsync()
+        {
+            return await _userRepo.GetUnassignedBankUsersAsync();
+        }
+
     }
 }

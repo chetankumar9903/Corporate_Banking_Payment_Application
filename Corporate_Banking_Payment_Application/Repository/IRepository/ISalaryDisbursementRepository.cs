@@ -5,7 +5,7 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
     public interface ISalaryDisbursementRepository
     {
         //Task<IEnumerable<SalaryDisbursement>> GetAll();
-        Task<PagedResult<SalaryDisbursement>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize);
+        Task<PagedResult<SalaryDisbursement>> GetAll(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize, int? clientId);
         Task<SalaryDisbursement?> GetById(int id);
         Task<IEnumerable<SalaryDisbursement>> GetByClientId(int clientId);
         Task<IEnumerable<SalaryDisbursement>> GetByEmployeeId(int employeeId);

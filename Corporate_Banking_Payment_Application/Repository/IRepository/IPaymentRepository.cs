@@ -15,6 +15,7 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
         // Utility/Query Methods
         Task<bool> ExistsPayment(int id);
         Task<IEnumerable<Payment>> GetPaymentsByClientId(int clientId);
+
         Task<IEnumerable<Payment>> GetPaymentsByBeneficiaryId(int beneficiaryId);
         Task<IEnumerable<Payment>> GetPaymentsByStatus(Status status);
     }

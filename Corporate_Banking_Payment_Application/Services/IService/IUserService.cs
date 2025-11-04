@@ -13,5 +13,6 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<bool> DeleteUser(int id);
 
         Task<IEnumerable<UserDto>> GetAvailableClientUsers();
+        Task<IEnumerable<User>> GetUnassignedBankUsersAsync();
     }
 }
