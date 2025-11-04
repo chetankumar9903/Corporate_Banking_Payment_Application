@@ -5,6 +5,7 @@ using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Repository.IRepository;
 using Corporate_Banking_Payment_Application.Services.IService;
+using System;
 
 namespace Corporate_Banking_Payment_Application.Services
 {
@@ -27,6 +28,37 @@ namespace Corporate_Banking_Payment_Application.Services
             _logger = logger;
         }
 
+        //public async Task<string?> GetSignedDownloadUrl(int id)
+        //{
+        //    // 1. Find the document in your database
+        //    var document = await _documentRepo.GetDocumentById(id);
+
+        //    if (document == null || !document.IsActive)
+        //    {
+        //        return null;
+        //    }
+
+        //    // 2. Determine the ResourceType.
+        //    var resourceType = document.DocumentType.StartsWith("image") ? "image" : "raw";
+
+        //    // 3. Generate the signed, authenticated URL to force download
+        //    var downloadUrl = _cloudinary.Api.Url // Use _cloudinary.Api.Url
+        //        .Type("authenticated")
+        //        .ResourceType(resourceType)
+        //        .PublicId(document.CloudinaryPublicId)
+        //        .Secure(true)
+        //        .SignUrl(true) // Generates the signature
+        //        .Expiration(DateTime.Now.AddMinutes(15)) // URL is valid for 15 mins
+        //        .Transform(new Transformation()
+        //            // This forces download + sets the filename
+        //            .Flags("attachment:" + document.DocumentName))
+        //        .BuildUrl();
+
+        //    // 4. Return the URL
+        //    return downloadUrl;
+        //}
+
+
         // --- Retrieval Operations ---
 
         //public async Task<IEnumerable<DocumentDto>> GetAllDocuments()
@@ -46,6 +78,53 @@ namespace Corporate_Banking_Payment_Application.Services
                 TotalCount = pagedResult.TotalCount
             };
         }
+
+    //    public async Task<string?> GetTemporaryViewUrl(int id)
+    //    {
+    //        var document = await _documentRepo.GetDocumentById(id);
+    //        if (document == null) return null;
+
+    //        var publicId = document.CloudinaryPublicId;
+    //        var resourceType = document.DocumentType.StartsWith("image") ? "image" : "raw";
+    //        var type = "authenticated";
+
+    //        // 1. Get the current time as a Unix timestamp
+    //        long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+
+    //        // 2. Set expiration 10 minutes (600 seconds) from now
+    //        long expiration = timestamp + 600;
+
+    //        // 3. Create a dictionary for signing.
+    //        // We MUST use SortedDictionary for the signature to be correct
+    //        var parametersToSign = new SortedDictionary<string, object>
+    //{
+    //    { "public_id", publicId },
+    //    { "timestamp", timestamp },
+    //    { "exp", expiration }
+    //    // Note: Do NOT add resource_type or type here
+    //};
+
+    //        // 4. Sign the parameters to get the signature
+    //        string signature = _cloudinary.Api.SignParameters(parametersToSign);
+
+    //        // 5. Build the base URL
+    //        string baseUrl = _cloudinary.Api.Url
+    //            .ResourceType(resourceType)
+    //            .Type(type)
+    //            .Secure(true)
+    //            .BuildUrl(publicId); // This only takes the publicId
+
+    //        // 6. Manually create the query string
+    //        string queryString = $"exp={expiration}&timestamp={timestamp}&signature={signature}&api_key={_cloudinary.Api.Account.ApiKey}";
+
+    //        // 7. Combine the base URL and the query string
+    //        string finalUrl = $"{baseUrl}?{queryString}";
+
+    //        return finalUrl;
+    //    }
+
+
+
 
         public async Task<DocumentDto?> GetDocumentById(int id)
         {
@@ -168,5 +247,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 document.CloudinaryPublicId, deletionResult.Result);
             return false;
         }
+
+
     }
 }

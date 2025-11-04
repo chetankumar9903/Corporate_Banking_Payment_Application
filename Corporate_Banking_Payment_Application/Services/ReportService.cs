@@ -64,6 +64,12 @@ namespace Corporate_Banking_Payment_Application.Services
                         var payments = await _paymentRepo.GetPaymentsByClientId(clientId);
                         var filteredPayments = ApplyDateRangeFilter(payments, request.StartDate, request.EndDate);
 
+                        // Apply the status filter if it was provided
+                        if (request.PaymentStatusFilter.HasValue)
+                        {
+                            filteredPayments = filteredPayments.Where(p => p.PaymentStatus == request.PaymentStatusFilter.Value).ToList();
+                        }
+
                         if (!filteredPayments.Any())
                         {
                             throw new ArgumentException("No payment data found for the selected criteria.");
@@ -117,6 +123,12 @@ namespace Corporate_Banking_Payment_Application.Services
                     {
                         var allPayments = await _paymentRepo.GetPaymentsByClientId(clientId);
                         var allSalaries = await _salaryRepo.GetByClientId(clientId);
+
+                        // Apply the status filter to the payments list *before* combining
+                        if (request.PaymentStatusFilter.HasValue)
+                        {
+                            allPayments = allPayments.Where(p => p.PaymentStatus == request.PaymentStatusFilter.Value).ToList();
+                        }
 
                         var combinedTransactions = new List<TransactionReportDto>();
 
