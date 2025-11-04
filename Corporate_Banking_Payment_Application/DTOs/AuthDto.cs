@@ -40,6 +40,9 @@ namespace Corporate_Banking_Payment_Application.DTOs
 
         [Required]
         public string Password { get; set; } = string.Empty;
+
+        [Required]
+        public string RecaptchaToken { get; set; } = string.Empty;
     }
 
     public class AuthResponseDto

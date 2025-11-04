@@ -46,7 +46,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         public async Task<IActionResult> GetAllDocuments(
             [FromQuery] string? searchTerm = null,
             [FromQuery] string? sortColumn = null,
@@ -79,7 +79,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
         /// Uploads a new document to Cloudinary and saves its reference to the database.
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         [HttpPost("upload")]
         [Consumes("multipart/form-data")] // Essential for Swagger/Postman to recognize file upload
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -123,7 +123,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
         /// Updates a document record (e.g., changing its status).
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -140,7 +140,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
 
         /// Deletes the document record and the corresponding file from Cloudinary.
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

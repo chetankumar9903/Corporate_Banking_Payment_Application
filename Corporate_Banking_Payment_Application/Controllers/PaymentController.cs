@@ -76,7 +76,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
 
         /// Creates a new payment request
-        //[Authorize(Roles = "CLIENTUSER")]
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentDto dto)
         {
@@ -97,7 +97,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
 
         /// Updates the status and rejection reason of an existing payment.
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePayment(int id, [FromBody] UpdatePaymentDto dto)
         {
@@ -111,7 +111,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
 
         /// Deletes a specific payment record
-        //[Authorize(Roles = "SUPERADMIN,BANKUSER")]
+        [Authorize(Roles = "SUPERADMIN,BANKUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePayment(int id)
         {

@@ -201,6 +201,8 @@ namespace Corporate_Banking_Payment_Application
     });
             });
 
+            builder.Services.AddHttpClient();
+
 
             var app = builder.Build();
 
