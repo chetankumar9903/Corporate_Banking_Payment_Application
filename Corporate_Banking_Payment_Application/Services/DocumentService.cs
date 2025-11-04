@@ -156,7 +156,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 PublicId = $"customer-docs/{dto.CustomerId}/{dto.DocumentType}/{Guid.NewGuid()}",
                 Folder = "corporate_banking_app_documents", // Optional folder structure
                 // Use "authenticated" type for sensitive banking documents
-                Type = "authenticated"
+                Type = "upload"
             };
 
  
