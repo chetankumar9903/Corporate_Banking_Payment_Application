@@ -39,7 +39,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(clients);
         }
 
-        [Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER,CLIENTUSER")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
