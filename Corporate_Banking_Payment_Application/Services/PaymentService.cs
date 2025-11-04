@@ -188,5 +188,8 @@ namespace Corporate_Banking_Payment_Application.Services
             var payments = await _paymentRepo.GetPaymentsByStatus(status);
             return _mapper.Map<IEnumerable<PaymentDto>>(payments);
         }
+
+
+
     }
 }

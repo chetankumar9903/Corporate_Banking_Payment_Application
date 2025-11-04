@@ -14,6 +14,8 @@ namespace Corporate_Banking_Payment_Application.Models
         [ForeignKey("Beneficiary")]
         public int BeneficiaryId { get; set; }
 
+
+
         [Required]
         public decimal Amount { get; set; }
 

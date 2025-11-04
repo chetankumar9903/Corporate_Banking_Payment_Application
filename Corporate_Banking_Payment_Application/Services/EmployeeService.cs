@@ -62,14 +62,21 @@ namespace Corporate_Banking_Payment_Application.Services
             int existingCount = existingEmployees.Count();
 
             var employee = _mapper.Map<Employee>(dto);
+            // Pre-generate unique EmployeeCode and AccountNumber
+            employee.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, 0); // placeholder
+            employee.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, 0); // placeholder
 
             var created = await _employeeRepo.AddEmployee(employee);
 
 
-            if (string.IsNullOrWhiteSpace(created.EmployeeCode))
-                created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, created.EmployeeId);
+            //if (string.IsNullOrWhiteSpace(created.EmployeeCode))
+            //    created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, created.EmployeeId);
 
-            // account number using  client bank name
+            //// account number using  client bank name
+            //created.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, created.EmployeeId);
+
+            // Update with EmployeeId if needed
+            created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, created.EmployeeId);
             created.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, created.EmployeeId);
 
             await _employeeRepo.UpdateEmployee(created);

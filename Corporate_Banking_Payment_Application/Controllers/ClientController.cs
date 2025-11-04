@@ -1,7 +1,6 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -125,5 +124,14 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("{clientId}/balance")]
+        public async Task<IActionResult> GetBalance(int clientId)
+        {
+            var client = await _service.GetClientById(clientId);
+            if (client == null) return NotFound();
+            return Ok(new { balance = client.Balance });
+        }
+
     }
 }

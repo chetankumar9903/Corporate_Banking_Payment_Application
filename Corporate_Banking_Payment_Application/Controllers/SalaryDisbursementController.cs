@@ -1,7 +1,6 @@
 ﻿using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
@@ -26,13 +25,14 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll(
+             [FromQuery] int? clientId = null,
            [FromQuery] string? searchTerm = null,
            [FromQuery] string? sortColumn = null,
            [FromQuery] SortOrder? sortOrder = null,
            [FromQuery] int pageNumber = 1,
            [FromQuery] int pageSize = 10)
         {
-            var data = await _service.GetAll(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+            var data = await _service.GetAll(searchTerm, sortColumn, sortOrder, pageNumber, pageSize, clientId);
             return Ok(data);
         }
 

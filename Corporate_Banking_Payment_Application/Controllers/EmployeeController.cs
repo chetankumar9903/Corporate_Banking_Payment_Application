@@ -48,7 +48,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
 
         /// Creates a new employee record.
-        //[Authorize(Roles = "CLIENTUSER")]
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeDto dto)
         {
@@ -67,9 +67,9 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        
+
         /// Updates an existing employee record.
-        //[Authorize(Roles = "CLIENTUSER")]
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
         {
@@ -81,9 +81,9 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(updated);
         }
 
-       
+
         /// Deletes a specific employee record
-        //[Authorize(Roles = "CLIENTUSER")]
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {

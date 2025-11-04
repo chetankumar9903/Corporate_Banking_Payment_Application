@@ -12,11 +12,16 @@ namespace Corporate_Banking_Payment_Application.Services
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepo;
+        private readonly ICustomerRepository _customerRepo;
+        private readonly IClientRepository _clientRepo;
         private readonly IConfiguration _config;
 
-        public AuthService(IUserRepository userRepo, IConfiguration config)
+        public AuthService(IUserRepository userRepo, ICustomerRepository customerRepo,
+        IClientRepository clientRepo, IConfiguration config)
         {
             _userRepo = userRepo;
+            _customerRepo = customerRepo;
+            _clientRepo = clientRepo;
             _config = config;
         }
 
@@ -47,6 +52,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
             await _userRepo.AddUser(newUser);
 
+
             var token = GenerateJwtToken(newUser);
             return new AuthResponseDto
             {
@@ -70,45 +76,97 @@ namespace Corporate_Banking_Payment_Application.Services
             if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 throw new Exception("Invalid username or password.");
 
-            var token = GenerateJwtToken(user);
+            // Get optional customer & client (may be null)
+            var customer = await _customerRepo.GetCustomerByUserId(user.UserId);
+            Client? client = null;
+            if (customer != null)
+            {
+                client = await _clientRepo.GetClientByCustomerId(customer.CustomerId);
+            }
+
+            //var token = GenerateJwtToken(user);
+            //return new AuthResponseDto
+            //{
+            //    Token = token,
+            //    UserName = user.UserName,
+            //    Role = user.UserRole.ToString(),
+            //    EmailId = user.EmailId,
+            //    FullName = $"{user.FirstName} {user.LastName}"
+            //};
+
+            var token = GenerateJwtToken(user, client); // pass client to token generator
+
             return new AuthResponseDto
             {
                 Token = token,
                 UserName = user.UserName,
                 Role = user.UserRole.ToString(),
                 EmailId = user.EmailId,
-                FullName = $"{user.FirstName} {user.LastName}"
+                FullName = $"{user.FirstName} {user.LastName}",
+                ClientId = client?.ClientId
             };
         }
 
-        private string GenerateJwtToken(User user)
+        //private string GenerateJwtToken(User user)
+        //{
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        //    //var claims = new[]
+        //    //{
+        //    //    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+        //    //    new Claim(JwtRegisteredClaimNames.Email, user.EmailId),
+        //    //    new Claim("UserId", user.UserId.ToString()),
+        //    //    new Claim(ClaimTypes.Role, user.UserRole.ToString())
+        //    //};
+
+        //    var claims = new List<Claim>
+        //    {
+
+        //        new Claim("userid", user.UserId.ToString()),
+        //        new Claim("username", user.UserName),
+        //        new Claim("email", user.EmailId),
+        //        new Claim("role", user.UserRole.ToString()),
+        //    };
+        //    var tokenValidityMins = _config.GetValue<int>("Jwt:TokenValidityMins");
+
+        //    var token = new JwtSecurityToken(
+        //        issuer: _config["Jwt:Issuer"],
+        //        audience: _config["Jwt:Audience"],
+        //        claims: claims,
+        //        //expires: DateTime.UtcNow.AddHours(3), 
+        //        expires: DateTime.UtcNow.AddMinutes(tokenValidityMins),
+        //        signingCredentials: creds
+        //    );
+
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
+
+        private string GenerateJwtToken(User user, Client? client = null)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            //var claims = new[]
-            //{
-            //    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-            //    new Claim(JwtRegisteredClaimNames.Email, user.EmailId),
-            //    new Claim("UserId", user.UserId.ToString()),
-            //    new Claim(ClaimTypes.Role, user.UserRole.ToString())
-            //};
-
             var claims = new List<Claim>
-            {
+        {
+            new Claim("userid", user.UserId.ToString()),
+            new Claim("username", user.UserName),
+            new Claim("email", user.EmailId),
+            new Claim("role", user.UserRole.ToString())
+        };
 
-                new Claim("userid", user.UserId.ToString()),
-                new Claim("username", user.UserName),
-                new Claim("email", user.EmailId),
-                new Claim("role", user.UserRole.ToString()),
-            };
+            // Add clientid claim only if user is linked to a client
+            if (client != null)
+            {
+                claims.Add(new Claim("clientid", client.ClientId.ToString()));
+            }
+
             var tokenValidityMins = _config.GetValue<int>("Jwt:TokenValidityMins");
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                //expires: DateTime.UtcNow.AddHours(3), 
                 expires: DateTime.UtcNow.AddMinutes(tokenValidityMins),
                 signingCredentials: creds
             );

@@ -1,9 +1,8 @@
-﻿using Corporate_Banking_Payment_Application.DTOs;
+﻿using CloudinaryDotNet;
+using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Corporate_Banking_Payment_Application.Controllers
 {
@@ -14,11 +13,18 @@ namespace Corporate_Banking_Payment_Application.Controllers
     {
         private readonly IReportService _reportService;
         private readonly ILogger<ReportsController> _logger;
+        private readonly Cloudinary _cloudinary;
 
-        public ReportsController(IReportService reportService, ILogger<ReportsController> logger)
+        public ReportsController(IReportService reportService, ILogger<ReportsController> logger, IConfiguration config)
         {
             _reportService = reportService;
             _logger = logger;
+            var account = new Account(
+        config["CloudinarySettings:CloudName"],
+        config["CloudinarySettings:ApiKey"],
+        config["CloudinarySettings:ApiSecret"]
+    );
+            _cloudinary = new Cloudinary(account);
         }
 
         /// Generates a new report (PDF/Excel), uploads it to Cloudinary, and saves the record
@@ -130,6 +136,57 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return StatusCode(500, new { error = "An internal server error occurred." });
             }
         }
+
+        [HttpGet("download/{id}")]
+        public async Task<IActionResult> DownloadReport(int id)
+        {
+            try
+            {
+                // 1️⃣ Get the report record from the database
+                var report = await _reportService.GetReportById(id);
+                if (report == null)
+                    return NotFound(new { error = $"Report with ID {id} not found." });
+
+                // 2️⃣ Extract the publicId from the stored Cloudinary URL
+                var uri = new Uri(report.FilePath);
+                var fileNameWithExtension = Path.GetFileName(uri.LocalPath);
+                var publicId = Path.Combine("corporate_banking_app_reports", Path.GetFileNameWithoutExtension(fileNameWithExtension));
+
+                // 3️⃣ Generate a signed URL using Cloudinary API
+                var downloadUrl = _cloudinary.Api.UrlImgUp
+                    .ResourceType("raw")   // raw files
+                    .Type("upload")
+                    .BuildUrl(publicId);   // Unsigned URL
+
+                // If file is private, you can generate a signed URL like this:
+                var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                var signature = _cloudinary.Api.SignParameters(new Dictionary<string, object>
+        {
+            { "public_id", publicId },
+            { "timestamp", timestamp }
+        });
+                downloadUrl = $"{downloadUrl}?timestamp={timestamp}&signature={signature}&api_key={_cloudinary.Api.Account.ApiKey}";
+
+                // 4️⃣ Download the file bytes using HttpClient
+                using var http = new HttpClient();
+                var fileBytes = await http.GetByteArrayAsync(downloadUrl);
+
+                // 5️⃣ Determine content type
+                var contentType = report.OutputFormat == ReportOutputFormat.PDF
+                    ? "application/pdf"
+                    : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                // 6️⃣ Return the file
+                return File(fileBytes, contentType, fileNameWithExtension);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error downloading report {ReportId}", id);
+                return StatusCode(500, new { error = "Failed to download file", details = ex.Message });
+            }
+        }
+
+
     }
 }
 
