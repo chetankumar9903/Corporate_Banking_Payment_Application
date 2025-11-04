@@ -18,9 +18,9 @@ namespace Corporate_Banking_Payment_Application.Services
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public AuthService(IUserRepository userRepo, IConfiguration config, IHttpClientFactory httpClientFactory)
+        //public AuthService(IUserRepository userRepo, IConfiguration config, IHttpClientFactory httpClientFactory)
         public AuthService(IUserRepository userRepo, ICustomerRepository customerRepo,
-        IClientRepository clientRepo, IConfiguration config)
+        IClientRepository clientRepo, IConfiguration config, IHttpClientFactory httpClientFactory)
         {
             _userRepo = userRepo;
             _customerRepo = customerRepo;
@@ -145,7 +145,7 @@ namespace Corporate_Banking_Payment_Application.Services
             }
         }
 
-        private string GenerateJwtToken(User user)
+        //private string GenerateJwtToken(User user)
         //private string GenerateJwtToken(User user)
         //{
         //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));

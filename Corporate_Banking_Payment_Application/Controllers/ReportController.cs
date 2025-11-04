@@ -2,13 +2,14 @@
 using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corporate_Banking_Payment_Application.Controllers
 {
     [Route("api/reports")]
     [ApiController]
-     [Authorize] // Uncomment this line when your authentication is set up
+    [Authorize] // Uncomment this line when your authentication is set up
     public class ReportsController : ControllerBase
     {
         private readonly IReportService _reportService;
