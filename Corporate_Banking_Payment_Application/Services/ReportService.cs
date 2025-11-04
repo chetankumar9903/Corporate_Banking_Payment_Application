@@ -44,7 +44,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<ReportDto> GenerateAndSaveReport(GenerateReportRequestDto request, int currentUserId, UserRole currentUserRole)
         {
-            // 1. Validate and Authorize Request (Same as before)
+            // 1. Validate and Authorize Request (Unchanged)
             var user = await ValidateAndAuthorizeRequest(request, currentUserId, currentUserRole);
 
             if (!request.ClientId.HasValue)
@@ -55,7 +55,7 @@ namespace Corporate_Banking_Payment_Application.Services
             var clientId = request.ClientId.Value;
             MemoryStream fileStream;
 
-            // 2. Fetch Data AND Generate File (This replaces your GetReportData method)
+            // 2. Fetch Data AND Generate File
             switch (request.ReportType)
             {
                 case ReportType.PAYMENT:
@@ -64,7 +64,6 @@ namespace Corporate_Banking_Payment_Application.Services
                         var payments = await _paymentRepo.GetPaymentsByClientId(clientId);
                         var filteredPayments = ApplyDateRangeFilter(payments, request.StartDate, request.EndDate);
 
-                        // Apply the status filter if it was provided
                         if (request.PaymentStatusFilter.HasValue)
                         {
                             filteredPayments = filteredPayments.Where(p => p.PaymentStatus == request.PaymentStatusFilter.Value).ToList();
@@ -75,11 +74,13 @@ namespace Corporate_Banking_Payment_Application.Services
                             throw new ArgumentException("No payment data found for the selected criteria.");
                         }
 
+                        // --- THIS IS THE FIX ---
                         var paymentReportData = filteredPayments.Select(p => new PaymentReportDto
                         {
                             PaymentId = p.PaymentId,
-                            ClientId = p.ClientId,
-                            BeneficiaryId = p.BeneficiaryId,
+                            // Use navigation properties to get the names
+                            ClientName = p.Client?.CompanyName ?? "N/A",
+                            BeneficiaryName = p.Beneficiary?.BeneficiaryName ?? "N/A",
                             Amount = p.Amount,
                             RequestDate = p.RequestDate,
                             ProcessedDate = p.ProcessedDate,
@@ -87,8 +88,8 @@ namespace Corporate_Banking_Payment_Application.Services
                             Description = p.Description,
                             RejectReason = p.RejectReason
                         }).ToList();
+                        // --- END OF FIX ---
 
-                        // Pass the new DTO list to the generator
                         fileStream = ReportGenerator.Generate(paymentReportData, request.OutputFormat, request.ReportType);
                         break;
                     }
@@ -103,18 +104,20 @@ namespace Corporate_Banking_Payment_Application.Services
                             throw new ArgumentException("No salary data found for the selected criteria.");
                         }
 
+                        // --- THIS IS THE FIX ---
                         var salaryReportData = filteredSalaries.Select(s => new SalaryReportDto
                         {
                             SalaryDisbursementId = s.SalaryDisbursementId,
-                            ClientId = s.ClientId,
-                            EmployeeId = s.EmployeeId,
+                            // Use navigation properties to get the names
+                            ClientName = s.Client?.CompanyName ?? "N/A",
+                            EmployeeName = s.Employee != null ? $"{s.Employee.FirstName} {s.Employee.LastName}" : "N/A",
                             Amount = s.Amount,
                             Date = s.Date,
                             Description = s.Description,
                             BatchId = s.BatchId
                         }).ToList();
+                        // --- END OF FIX ---
 
-                        // Pass the new DTO list to the generator
                         fileStream = ReportGenerator.Generate(salaryReportData, request.OutputFormat, request.ReportType);
                         break;
                     }
@@ -124,7 +127,6 @@ namespace Corporate_Banking_Payment_Application.Services
                         var allPayments = await _paymentRepo.GetPaymentsByClientId(clientId);
                         var allSalaries = await _salaryRepo.GetByClientId(clientId);
 
-                        // Apply the status filter to the payments list *before* combining
                         if (request.PaymentStatusFilter.HasValue)
                         {
                             allPayments = allPayments.Where(p => p.PaymentStatus == request.PaymentStatusFilter.Value).ToList();
@@ -132,34 +134,32 @@ namespace Corporate_Banking_Payment_Application.Services
 
                         var combinedTransactions = new List<TransactionReportDto>();
 
-                        // Map Payments
+                        // This mapping is already correct
                         combinedTransactions.AddRange(allPayments.Select(p => new TransactionReportDto
                         {
                             TransactionId = $"PAY-{p.PaymentId}",
                             Date = p.RequestDate,
                             Type = "Payment",
                             Amount = p.Amount,
-                            // Check if Beneficiary was loaded
                             Recipient = p.Beneficiary?.BeneficiaryName ?? "N/A",
                             Status = p.PaymentStatus.ToString(),
                             Description = p.Description
                         }));
 
-                        // Map Salary Disbursements
+                        // This mapping is also already correct
                         combinedTransactions.AddRange(allSalaries.Select(s => new TransactionReportDto
                         {
                             TransactionId = $"SAL-{s.SalaryDisbursementId}",
                             Date = s.Date,
                             Type = "Salary",
                             Amount = s.Amount,
-                            // Check if Employee was loaded
                             Recipient = s.Employee != null ? $"{s.Employee.FirstName} {s.Employee.LastName}" : "N/A",
-                            Status = "Disbursed", // Salary disbursements are considered complete
+                            Status = "Disbursed",
                             Description = s.Description
                         }));
 
                         var filteredTransactions = ApplyDateRangeFilter(combinedTransactions, request.StartDate, request.EndDate)
-                                                     .OrderBy(t => t.Date) // Order by date
+                                                     .OrderBy(t => t.Date)
                                                      .ToList();
 
                         if (!filteredTransactions.Any())
@@ -175,18 +175,14 @@ namespace Corporate_Banking_Payment_Application.Services
                     throw new ArgumentException($"Unsupported ReportType: {request.ReportType}");
             }
 
+            // ... (rest of the method for saving, uploading, etc. is unchanged)
 
-
-            // 1. Get the raw bytes from the stream
-            // (Make sure your ReportGenerator code includes stream.Position = 0!)
             byte[] fileBytes = fileStream.ToArray();
             fileStream.Close();
             fileStream.Dispose();
-            // 2. Define a local path to save the file
             string fileExtension = request.OutputFormat == ReportOutputFormat.EXCEL ? "xlsx" : "pdf";
             string localFilePath = Path.Combine(@"C:\TempReports", $"{request.ReportName}-{DateTime.Now.Ticks}.{fileExtension}");
 
-            // 3. Save the file to your local disk
             try
             {
                 await File.WriteAllBytesAsync(localFilePath, fileBytes);
@@ -194,26 +190,21 @@ namespace Corporate_Banking_Payment_Application.Services
             }
             catch (Exception ex)
             {
-                // Log a warning, but don't stop the real upload
                 _logger.LogWarning(ex, "Failed to save local test report to: {LocalPath}", localFilePath);
             }
 
-
-            // 5. Upload and Save
-            // Create a NEW, clean stream from the byte array for Cloudinary
             using (var uploadStream = new MemoryStream(fileBytes))
             {
-                // Pass the NEW stream to the uploader
                 var uploadResult = await UploadReportToCloudinary(uploadStream, request.ReportName, request.OutputFormat);
 
-                // 6. Save Report Record
                 var reportToCreate = new Report
                 {
                     ReportName = request.ReportName,
                     ReportType = request.ReportType,
                     GeneratedBy = currentUserId,
                     OutputFormat = request.OutputFormat,
-                    FilePath = uploadResult.SecureUrl.ToString()
+                    FilePath = uploadResult.SecureUrl.ToString(),
+                    ClientId = request.ClientId
                 };
 
                 var created = await _reportRepo.AddReport(reportToCreate);
@@ -227,19 +218,10 @@ namespace Corporate_Banking_Payment_Application.Services
             return report == null ? null : _mapper.Map<ReportDto>(report);
         }
 
-        //public async Task<IEnumerable<ReportDto>> GetReportsByUser(int userId)
-        //{
-        //    // The repository call can remain the same
-        //    var reports = await _reportRepo.GetReportsByUserId(userId);
-        //    return _mapper.Map<IEnumerable<ReportDto>>(reports);
-        //}
-
         public async Task<PagedResult<ReportDto>> GetReportsByUser(int userId, string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
             var pagedResult = await _reportRepo.GetReportsByUserId(userId, searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
-
             var itemsDto = _mapper.Map<IEnumerable<ReportDto>>(pagedResult.Items);
-
             return new PagedResult<ReportDto>
             {
                 Items = itemsDto.ToList(),
@@ -247,15 +229,13 @@ namespace Corporate_Banking_Payment_Application.Services
             };
         }
 
-        // --- Internal Helper Methods ---
+        // --- (Internal Helper Methods are unchanged) ---
 
-        // Signature updated to accept UserRole
         private async Task<User> ValidateAndAuthorizeRequest(GenerateReportRequestDto request, int userId, UserRole currentUserRole)
         {
             var user = await _userRepo.GetUserById(userId)
                 ?? throw new Exception("Generating user not found.");
 
-            // Verify the passed role matches the user's actual role
             if (user.UserRole != currentUserRole)
             {
                 throw new UnauthorizedAccessException("User role mismatch.");
@@ -268,31 +248,25 @@ namespace Corporate_Banking_Payment_Application.Services
                     throw new Exception($"Client ID {request.ClientId.Value} specified in request is invalid.");
             }
 
-            switch (currentUserRole) // Use the validated role
+            switch (currentUserRole)
             {
                 case UserRole.SUPERADMIN:
                     break;
-
                 case UserRole.BANKUSER:
                     break;
-
                 case UserRole.CLIENTUSER:
                     var customerId = user.Customer?.CustomerId ?? throw new Exception("Client User not linked to a Customer account.");
-
                     var clientUser = await _clientRepo.GetClientByCustomerId(customerId)
                         ?? throw new Exception("Client User's Customer not linked to a Client account.");
-
                     if (request.ClientId.HasValue && request.ClientId.Value != clientUser.ClientId)
                     {
                         throw new UnauthorizedAccessException("Client User cannot generate reports for other clients.");
                     }
                     request.ClientId = clientUser.ClientId;
                     break;
-
                 default:
                     throw new UnauthorizedAccessException("User role not authorized for report generation.");
             }
-
             return user;
         }
 

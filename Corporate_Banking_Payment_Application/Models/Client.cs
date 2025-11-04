@@ -35,6 +35,7 @@ namespace Corporate_Banking_Payment_Application.Models
         public ICollection<SalaryDisbursement>? SalaryDisbursements { get; set; }
         public ICollection<BatchTransaction>? BatchTransactions { get; set; }
         public ICollection<Beneficiary>? Beneficiaries { get; set; }
+        public ICollection<Report>? Reports { get; set; }
 
     }
 }

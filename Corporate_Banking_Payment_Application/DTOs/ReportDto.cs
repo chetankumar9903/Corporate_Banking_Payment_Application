@@ -1,5 +1,4 @@
-﻿
-using Corporate_Banking_Payment_Application.Models;
+﻿using Corporate_Banking_Payment_Application.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Corporate_Banking_Payment_Application.DTOs
@@ -7,17 +6,12 @@ namespace Corporate_Banking_Payment_Application.DTOs
     // DTO for requesting a new report generation (Input DTO)
     public class GenerateReportRequestDto
     {
-        // ✅ FIX: Added ReportName
         [Required(ErrorMessage = "Report name is required.")]
         [MaxLength(100)]
         public string ReportName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Report type is required.")]
         public ReportType ReportType { get; set; }
-
-        // Note: The UserId should be taken from the authenticated user context (like a JWT token),
-        // not passed in the DTO, for security reasons. The controller will handle this.
-        // public int UserId { get; set; } 
 
         [Required(ErrorMessage = "Output format (PDF or EXCEL) is required.")]
         public ReportOutputFormat OutputFormat { get; set; }
@@ -71,11 +65,16 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public string? Description { get; set; }
     }
 
+    // --- THIS DTO IS UPDATED ---
     public class PaymentReportDto
     {
         public int PaymentId { get; set; }
-        public int ClientId { get; set; }
-        public int BeneficiaryId { get; set; }
+
+        // --- UPDATED ---
+        public string ClientName { get; set; } = string.Empty;
+        public string BeneficiaryName { get; set; } = string.Empty;
+        // --- END OF UPDATE ---
+
         public decimal Amount { get; set; }
         public DateTime RequestDate { get; set; }
         public DateTime? ProcessedDate { get; set; }
@@ -84,11 +83,16 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public string? RejectReason { get; set; }
     }
 
+    // --- THIS DTO IS UPDATED ---
     public class SalaryReportDto
     {
         public int SalaryDisbursementId { get; set; }
-        public int ClientId { get; set; }
-        public int EmployeeId { get; set; }
+
+        // --- UPDATED ---
+        public string ClientName { get; set; } = string.Empty;
+        public string EmployeeName { get; set; } = string.Empty;
+        // --- END OF UPDATE ---
+
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public string? Description { get; set; }

@@ -107,6 +107,7 @@ namespace Corporate_Banking_Payment_Application.Repository
             return await _context.SalaryDisbursements
                 .Where(s => s.ClientId == clientId)
                 .Include(s => s.Employee)
+                .Include(s => s.Client)
                 .AsNoTracking()
                 .ToListAsync();
         }

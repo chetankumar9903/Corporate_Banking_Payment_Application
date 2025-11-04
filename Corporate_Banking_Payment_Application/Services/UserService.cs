@@ -73,5 +73,11 @@ namespace Corporate_Banking_Payment_Application.Services
             await _userRepo.DeleteUser(user);
             return true;
         }
+
+        public async Task<IEnumerable<UserDto>> GetAvailableClientUsers()
+        {
+            var users = await _userRepo.GetAvailableClientUsers();
+            return _mapper.Map<IEnumerable<UserDto>>(users);
+        }
     }
 }

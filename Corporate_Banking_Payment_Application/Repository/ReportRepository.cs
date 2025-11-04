@@ -18,7 +18,8 @@ namespace Corporate_Banking_Payment_Application.Repository
         private IQueryable<Report> GetBaseQuery()
         {
             // Eager load the User for sorting/searching
-            return _context.Reports.Include(r => r.User);
+            return _context.Reports.Include(r => r.User)
+                                   .Include(r => r.Client);
         }
 
         /// Adds a new Report record to the database after successful file upload to Cloudinary.
@@ -61,7 +62,10 @@ namespace Corporate_Banking_Payment_Application.Repository
                 searchTerm = searchTerm.ToLower();
                 query = query.Where(r =>
                     r.ReportName.ToLower().Contains(searchTerm) ||
-                    r.ReportType.ToString().ToLower().Contains(searchTerm)
+                    r.ReportType.ToString().ToLower().Contains(searchTerm) ||
+                    r.OutputFormat.ToString().ToLower().Contains(searchTerm) ||
+                    (r.ClientId.HasValue && r.ClientId.Value.ToString().Contains(searchTerm)) || // <-- Search by Client ID
+                    (r.Client != null && r.Client.CompanyName.ToLower().Contains(searchTerm)) // <-- Search by Client Name
                 );
             }
 

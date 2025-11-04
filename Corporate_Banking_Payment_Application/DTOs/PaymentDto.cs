@@ -3,6 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Corporate_Banking_Payment_Application.DTOs
 {
+    public class NestedClientDto
+    {
+        public string CompanyName { get; set; }
+    }
+
+    public class NestedBeneficiaryDto
+    {
+        public string BeneficiaryName { get; set; }
+        public string AccountNumber { get; set; }
+    }
     public class PaymentDto
     {
         public int PaymentId { get; set; }
@@ -14,6 +24,9 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public Status PaymentStatus { get; set; }
         public string? Description { get; set; }
         public string? RejectReason { get; set; }
+
+        public NestedClientDto Client { get; set; }
+        public NestedBeneficiaryDto Beneficiary { get; set; }
     }
 
     // DTO for creating a new payment request (Write Operation)
