@@ -21,6 +21,9 @@ namespace Corporate_Banking_Payment_Application.Models
         [ForeignKey("User")]
         public int GeneratedBy { get; set; }
 
+        [ForeignKey("Client")]
+        public int? ClientId { get; set; } // Make it nullable for reports not tied to one client
+
         [Required]
         public DateTime GeneratedDate { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(
             DateTime.UtcNow,
@@ -35,5 +38,6 @@ namespace Corporate_Banking_Payment_Application.Models
 
         // Navigation
         public User? User { get; set; }
+        public Client? Client { get; set; }
     }
 }

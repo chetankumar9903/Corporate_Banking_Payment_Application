@@ -46,7 +46,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         public async Task<IActionResult> GetAllDocuments(
             [FromQuery] string? searchTerm = null,
             [FromQuery] string? sortColumn = null,
@@ -79,7 +79,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
         /// Uploads a new document to Cloudinary and saves its reference to the database.
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         [HttpPost("upload")]
         [Consumes("multipart/form-data")] // Essential for Swagger/Postman to recognize file upload
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -123,7 +123,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
         /// Updates a document record (e.g., changing its status).
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -140,7 +140,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
 
         /// Deletes the document record and the corresponding file from Cloudinary.
-        //[Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -160,5 +160,24 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Deletion failed. File may still exist in Cloudinary.", details = ex.Message });
             }
         }
+
+        //[HttpGet("view-url/{id}")]
+        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> GetViewableUrl(int id)
+        //{
+        //    // You will need to add this method to your IDocumentService
+        //    var url = await _service.GetTemporaryViewUrl(id);
+
+        //    if (url == null)
+        //    {
+        //        return NotFound("Document not found or access denied.");
+        //    }
+
+        //    // Return just the URL as a simple JSON object (or string)
+        //    return Ok(new { url = url });
+        //}
+
+
     }
 }

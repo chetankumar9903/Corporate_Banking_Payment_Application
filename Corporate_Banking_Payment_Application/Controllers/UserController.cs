@@ -78,6 +78,12 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return NoContent();
         }
 
+        [HttpGet("available-client-users")]
+        public async Task<IActionResult> GetAvailableClientUsers()
+        {
+            var users = await _service.GetAvailableClientUsers();
+            return Ok(users);
+        }
         //[HttpGet("bankusers")]
         //public async Task<IActionResult> GetBankUsers()
         //{

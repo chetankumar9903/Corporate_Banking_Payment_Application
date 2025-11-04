@@ -12,6 +12,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<UserDto?> UpdateUser(int id, UpdateUserDto dto);
         Task<bool> DeleteUser(int id);
 
+        Task<IEnumerable<UserDto>> GetAvailableClientUsers();
         Task<IEnumerable<User>> GetUnassignedBankUsersAsync();
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace Corporate_Banking_Payment_Application.Services
 {
@@ -15,7 +16,9 @@ namespace Corporate_Banking_Payment_Application.Services
         private readonly ICustomerRepository _customerRepo;
         private readonly IClientRepository _clientRepo;
         private readonly IConfiguration _config;
+        private readonly IHttpClientFactory _httpClientFactory;
 
+        public AuthService(IUserRepository userRepo, IConfiguration config, IHttpClientFactory httpClientFactory)
         public AuthService(IUserRepository userRepo, ICustomerRepository customerRepo,
         IClientRepository clientRepo, IConfiguration config)
         {
@@ -23,6 +26,7 @@ namespace Corporate_Banking_Payment_Application.Services
             _customerRepo = customerRepo;
             _clientRepo = clientRepo;
             _config = config;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<AuthResponseDto> Register(RegisterDto dto)
@@ -66,6 +70,11 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<AuthResponseDto> Login(LoginDto dto)
         {
+            if (!await IsCaptchaValid(dto.RecaptchaToken))
+            {
+                throw new Exception("CAPTCHA validation failed. Please try again.");
+            }
+
             var user = await _userRepo.GetByUserName(dto.UserName);
             if (user == null)
                 throw new Exception("Invalid username or password.");
@@ -107,6 +116,36 @@ namespace Corporate_Banking_Payment_Application.Services
             };
         }
 
+        private async Task<bool> IsCaptchaValid(string token)
+        {
+            try
+            {
+                var secretKey = _config["GoogleReCaptcha:SecretKey"];
+                var client = _httpClientFactory.CreateClient();
+
+                // Send the token to Google's verification API
+                var response = await client.PostAsync(
+                    $"https://www.google.com/recaptcha/api/siteverify?secret={secretKey}&response={token}",
+                    null
+                );
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<RecaptchaResponseDto>(jsonString);
+                    return result?.Success ?? false;
+                }
+
+                return false;
+            }
+            catch (Exception)
+            {
+                // If Google's API fails, block the login
+                return false;
+            }
+        }
+
+        private string GenerateJwtToken(User user)
         //private string GenerateJwtToken(User user)
         //{
         //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));

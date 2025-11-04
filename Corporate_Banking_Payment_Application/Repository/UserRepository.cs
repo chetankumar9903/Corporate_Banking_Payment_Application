@@ -130,6 +130,15 @@ namespace Corporate_Banking_Payment_Application.Repository
             return await _context.Users.FirstOrDefaultAsync(u => u.EmailId == email);
         }
 
+        public async Task<IEnumerable<User>> GetAvailableClientUsers()
+        {
+            return await _context.Users
+              .AsNoTracking()
+      // Find all users who are CLIENTUSERs...
+                      .Where(u => u.UserRole == UserRole.CLIENTUSER &&
+                                  // ...and who do NOT exist in the Customers table
+                                  !_context.Customers.Any(c => c.UserId == u.UserId))
+              .ToListAsync();
         public async Task<IEnumerable<User>> GetUnassignedBankUsersAsync()
         {
             // Fetch all users with role BANKUSER

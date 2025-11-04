@@ -58,7 +58,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             var result = await _service.GetByEmployeeId(employeeId);
             return Ok(result);
         }
-        //[Authorize(Roles = "CLIENTUSER")]
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateSalaryDisbursementDto dto)
         {
@@ -77,7 +77,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        //[Authorize(Roles = "CLIENTUSER")]
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSalaryDisbursementDto dto)
         {
@@ -90,7 +90,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             if (updated == null) return NotFound();
             return Ok(updated);
         }
-        //[Authorize(Roles = "CLIENTUSER")]
+        [Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

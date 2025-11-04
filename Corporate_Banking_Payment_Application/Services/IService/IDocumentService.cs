@@ -21,5 +21,8 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         // Deletion Operation
         // This handles deleting the record from the database AND the file from Cloudinary
         Task<bool> DeleteDocument(int id);
+
+        //Task<string?> GetTemporaryViewUrl(int id);
+        //Task<string?> GetSignedDownloadUrl(int id);
     }
 }

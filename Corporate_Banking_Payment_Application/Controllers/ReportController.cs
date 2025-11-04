@@ -8,7 +8,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 {
     [Route("api/reports")]
     [ApiController]
-    // [Authorize] // Uncomment this line when your authentication is set up
+     [Authorize] // Uncomment this line when your authentication is set up
     public class ReportsController : ControllerBase
     {
         private readonly IReportService _reportService;
