@@ -9,5 +9,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<IEnumerable<BatchTransactionDto>> GetByClientId(int clientId);
         Task<BatchTransactionDto> CreateBatch(CreateBatchTransactionDto dto);
         Task<bool> DeleteBatch(int id);
+
+        Task<object> ProcessBatchCsv(IFormFile file, int clientId);
     }
 }

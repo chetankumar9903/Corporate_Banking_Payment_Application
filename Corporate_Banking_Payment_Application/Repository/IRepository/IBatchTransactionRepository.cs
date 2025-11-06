@@ -10,5 +10,6 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
         Task<BatchTransaction> Add(BatchTransaction entity);
         Task Update(BatchTransaction batch);
         Task Delete(BatchTransaction batch);
+        Task<BatchTransaction> CreateNewBatch(int clientId, int count, decimal total);
     }
 }

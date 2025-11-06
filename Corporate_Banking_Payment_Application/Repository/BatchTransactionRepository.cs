@@ -71,5 +71,19 @@ namespace Corporate_Banking_Payment_Application.Repository
             _context.BatchTransactions.Remove(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<BatchTransaction> CreateNewBatch(int clientId, int count, decimal total)
+        {
+            var batch = new BatchTransaction
+            {
+                ClientId = clientId,
+                TotalTransactions = count,
+                TotalAmount = total
+            };
+            _context.BatchTransactions.Add(batch);
+            await _context.SaveChangesAsync();
+            return batch;
+        }
+
     }
 }
