@@ -66,6 +66,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
             // 1 Map DTO to entity
             var client = _mapper.Map<Client>(dto);
+            client.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, 0);
 
             // 2 Save first to get ClientId
             var createdClient = await _clientRepo.AddClient(client);
