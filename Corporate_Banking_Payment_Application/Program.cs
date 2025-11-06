@@ -84,6 +84,9 @@ namespace Corporate_Banking_Payment_Application
             //authentication
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+            //Email (smtp)
+            builder.Services.AddScoped<IEmailService, EmailService>();
+
             // automapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
