@@ -87,7 +87,10 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<User?> GetUserById(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            //return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            return await _context.Users
+        .Include(u => u.Customer) // <-- ADD THIS LINE
+        .FirstOrDefaultAsync(u => u.UserId == id);
         }
 
         public async Task<User> AddUser(User user)

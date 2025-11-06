@@ -25,7 +25,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         //    return Ok(clients);
         //}
 
-        [Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER,SUPERADMIN,CLIENTUSER")]
         // MODIFIED: This endpoint now accepts query parameters
         [HttpGet]
         public async Task<IActionResult> GetAll(
@@ -57,7 +57,6 @@ namespace Corporate_Banking_Payment_Application.Controllers
             if (client == null) return NotFound();
             return Ok(client);
         }
-
 
 
         // Create new client (only if customer approved)

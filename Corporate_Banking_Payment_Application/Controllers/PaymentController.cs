@@ -111,7 +111,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
 
 
         /// Deletes a specific payment record
-        [Authorize(Roles = "SUPERADMIN,BANKUSER")]
+        [Authorize(Roles = "SUPERADMIN,BANKUSER,CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePayment(int id)
         {
