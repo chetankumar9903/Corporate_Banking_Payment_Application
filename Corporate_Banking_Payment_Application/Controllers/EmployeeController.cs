@@ -87,11 +87,20 @@ namespace Corporate_Banking_Payment_Application.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            var deleted = await _service.DeleteEmployee(id);
-            if (!deleted) return NotFound();
+            //var deleted = await _service.DeleteEmployee(id);
+            //if (!deleted) return NotFound();
 
-            // 204 No Content is standard for successful deletion
-            return NoContent();
+            //// 204 No Content is standard for successful deletion
+            //return NoContent();
+            try
+            {
+                await _service.DeleteEmployee(id);
+                return Ok(new { Message = "Employee deactivated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
         }
 
         [HttpGet("byclient/{clientId}")]
@@ -110,5 +119,31 @@ namespace Corporate_Banking_Payment_Application.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+
+
+
+        [Authorize(Roles = "CLIENTUSER")]
+        [HttpPost("upload-csv")]
+        public async Task<IActionResult> UploadEmployeesCsv(IFormFile file, [FromQuery] int clientId)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = "CSV file is required." });
+
+            // Only allow CSV
+            if (!file.FileName.EndsWith(".csv"))
+                return BadRequest(new { message = "Only CSV files are allowed." });
+
+            try
+            {
+                var result = await _service.ProcessEmployeeCsv(file, clientId);
+                return Ok(result); // { created: x, skipped: y }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }

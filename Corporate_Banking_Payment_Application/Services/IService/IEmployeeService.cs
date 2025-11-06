@@ -14,5 +14,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<bool> DeleteEmployee(int id);
 
         Task<IEnumerable<EmployeeDto>> GetEmployeesByClientId(int clientId);
+
+        Task<object> ProcessEmployeeCsv(IFormFile file, int clientId);
     }
 }

@@ -64,5 +64,27 @@ namespace Corporate_Banking_Payment_Application.Controllers
             if (!deleted) return NotFound();
             return NoContent();
         }
+
+        [Authorize(Roles = "CLIENTUSER")]
+        [HttpPost("upload-csv")]
+        public async Task<IActionResult> UploadBatchCsv(IFormFile file, [FromQuery] int clientId)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = "CSV file is required." });
+
+            if (!file.FileName.EndsWith(".csv"))
+                return BadRequest(new { message = "Only CSV files are allowed." });
+
+            try
+            {
+                var result = await _service.ProcessBatchCsv(file, clientId);
+                return Ok(result); // { created, skipped }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }

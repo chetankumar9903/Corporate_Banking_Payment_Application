@@ -27,6 +27,7 @@ namespace Corporate_Banking_Payment_Application.Repository
         {
             // Base query MUST include dependencies for searching and sorting
             var query = _context.Employees
+                .Where(e => e.IsActive)
                 .Include(e => e.Client)
                 .AsNoTracking();
 
@@ -120,7 +121,11 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task DeleteEmployee(Employee employee)
         {
-            _context.Employees.Remove(employee);
+            //_context.Employees.Remove(employee);
+            //await _context.SaveChangesAsync();
+
+            employee.IsActive = false;  // Soft delete
+            _context.Employees.Update(employee);
             await _context.SaveChangesAsync();
         }
 
@@ -128,6 +133,7 @@ namespace Corporate_Banking_Payment_Application.Repository
         {
             return await _context.Employees
                 .Where(e => e.ClientId == clientId)
+                //.Where(e => e.IsActive)
                 .AsNoTracking()
                 .ToListAsync();
         }

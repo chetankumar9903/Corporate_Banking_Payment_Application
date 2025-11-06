@@ -105,6 +105,8 @@ namespace Corporate_Banking_Payment_Application.Services
             var employee = await _employeeRepo.GetEmployeeById(id);
             if (employee == null) return false;
 
+            //await _employeeRepo.DeleteEmployee(employee);
+            //employee.IsActive = false;
             await _employeeRepo.DeleteEmployee(employee);
             return true;
         }
@@ -119,5 +121,147 @@ namespace Corporate_Banking_Payment_Application.Services
             // If no employees found, return empty list (not null)
             return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
         }
+
+
+
+        //public async Task<object> ProcessEmployeeCsv(IFormFile file, int clientId)
+        //{
+        //    var client = await _clientRepo.GetClientById(clientId);
+        //    if (client == null)
+        //        throw new Exception("Client not found.");
+
+        //    using var stream = new StreamReader(file.OpenReadStream());
+        //    List<CreateEmployeeDto> parsedEmployees = new();
+        //    string? line;
+        //    int lineNo = 0;
+
+        //    while ((line = await stream.ReadLineAsync()) != null)
+        //    {
+        //        lineNo++;
+        //        if (lineNo == 1) continue; // skip header
+
+        //        var cols = line.Split(',');
+        //        //if (cols.Length < 4)
+        //        //    continue;
+        //        if (cols.Length < 7) continue;
+
+        //        parsedEmployees.Add(new CreateEmployeeDto
+        //        {
+        //            ClientId = clientId,
+        //            FirstName = cols[0].Trim(),
+        //            LastName = cols[1].Trim(),
+        //            EmailId = cols[2].Trim(),
+        //            PhoneNumber = cols[3].Trim(),
+        //            Position = cols[4].Trim(),
+        //            Department = cols[5].Trim(),
+        //            Salary = decimal.TryParse(cols[6], out var sal) ? sal : 0,
+        //            IsActive = cols.Length > 7 ? cols[7].Trim().ToLower() == "true" : true
+
+        //        });
+        //    }
+
+        //    var existingEmployees = await _employeeRepo.GetEmployeesByClientId(clientId);
+        //    int created = 0, skipped = 0;
+
+        //    foreach (var emp in parsedEmployees)
+        //    {
+        //        bool exists = existingEmployees.Any(e =>
+        //            e.FirstName.ToLower() == emp.FirstName.ToLower() &&
+        //            e.LastName?.ToLower() == emp.LastName?.ToLower() &&
+        //            e.EmailId.ToLower() == emp.EmailId.ToLower() &&
+        //            e.PhoneNumber == emp.PhoneNumber
+        //        );
+
+        //        if (exists)
+        //        {
+        //            skipped++;
+        //            continue;
+        //        }
+
+        //        await CreateEmployee(emp); // Reuse existing logic
+        //        created++;
+        //    }
+
+        //    return new { created, skipped };
+        //}
+
+        public async Task<object> ProcessEmployeeCsv(IFormFile file, int clientId)
+        {
+            var client = await _clientRepo.GetClientById(clientId);
+            if (client == null)
+                throw new Exception("Client not found.");
+
+            using var stream = new StreamReader(file.OpenReadStream());
+            List<CreateEmployeeDto> parsedEmployees = new();
+            string? line;
+            int lineNo = 0;
+
+            while ((line = await stream.ReadLineAsync()) != null)
+            {
+                lineNo++;
+                if (lineNo == 1) continue;
+
+                var cols = line.Split(',');
+                if (cols.Length < 7) continue;
+
+                parsedEmployees.Add(new CreateEmployeeDto
+                {
+                    ClientId = clientId,
+                    FirstName = cols[0].Trim(),
+                    LastName = cols[1].Trim(),
+                    EmailId = cols[2].Trim(),
+                    PhoneNumber = cols[3].Trim(),
+                    Position = cols[4].Trim(),
+                    Department = cols[5].Trim(),
+                    Salary = decimal.TryParse(cols[6], out var sal) ? sal : 0,
+                    IsActive = cols.Length > 7 ? cols[7].Trim().ToLower() == "true" : true
+                });
+            }
+
+            var existingEmployees = await _employeeRepo.GetEmployeesByClientId(clientId);
+
+            int created = 0;
+            List<string> errors = new();
+
+            foreach (var emp in parsedEmployees)
+            {
+                var samePhone = existingEmployees.FirstOrDefault(e => e.PhoneNumber == emp.PhoneNumber);
+                if (samePhone != null)
+                {
+                    errors.Add($"Phone Number '{emp.PhoneNumber}' already exists for {samePhone.FirstName} {samePhone.LastName}.");
+                    continue;
+                }
+
+                var sameEmail = existingEmployees.FirstOrDefault(e => e.EmailId.ToLower() == emp.EmailId.ToLower());
+                if (sameEmail != null)
+                {
+                    errors.Add($"Email '{emp.EmailId}' already exists for {sameEmail.FirstName} {sameEmail.LastName}.");
+                    continue;
+                }
+
+                var samePerson = existingEmployees.FirstOrDefault(e =>
+                    e.FirstName.ToLower() == emp.FirstName.ToLower() &&
+                    e.LastName.ToLower() == emp.LastName.ToLower()
+                );
+
+                if (samePerson != null)
+                {
+                    errors.Add($"Duplicate Employee: '{emp.FirstName} {emp.LastName}' already exists.");
+                    continue;
+                }
+
+                await CreateEmployee(emp);
+                created++;
+            }
+
+            return new
+            {
+                created,
+                errorsCount = errors.Count,
+                errors
+            };
+        }
+
     }
+
 }
