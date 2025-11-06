@@ -76,7 +76,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        [Authorize(Roles = "BANKUSER")]
+        [Authorize(Roles = "BANKUSER,CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateClientDto dto)
         {
