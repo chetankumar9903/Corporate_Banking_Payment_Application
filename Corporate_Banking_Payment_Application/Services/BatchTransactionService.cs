@@ -6,6 +6,7 @@ using Corporate_Banking_Payment_Application.Repository.IRepository;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Corporate_Banking_Payment_Application.Services
 {
@@ -173,6 +174,96 @@ namespace Corporate_Banking_Payment_Application.Services
             return true;
         }
 
+        //[Authorize(Roles = "CLIENTUSER")]
+        //[HttpPost("upload-csv")]
+        //public async Task<object> ProcessBatchCsv(IFormFile file, [FromQuery] int clientId)
+        //{
+        //    var client = await _clientRepo.GetClientById(clientId);
+        //    if (client == null)
+        //        throw new Exception("Client not found.");
+
+        //    using var stream = new StreamReader(file.OpenReadStream());
+        //    List<string> employeeCodes = new();
+        //    string? line;
+        //    int lineNo = 0;
+
+        //    while ((line = await stream.ReadLineAsync()) != null)
+        //    {
+        //        lineNo++;
+        //        if (lineNo == 1) continue; // Skip header
+        //        if (string.IsNullOrWhiteSpace(line)) continue;
+
+        //        employeeCodes.Add(line.Trim());
+        //    }
+
+        //    if (employeeCodes.Count == 0)
+        //        throw new Exception("No employee codes found in CSV.");
+
+        //    // Get all employees for the client
+        //    var employees = await _employeeRepo.GetEmployeesByClientId(clientId);
+
+        //    // Valid employees = match code & active
+        //    var validEmployees = employees
+        //        .Where(e => employeeCodes.Contains(e.EmployeeCode) && e.IsActive)
+        //        .ToList();
+
+        //    // Invalid = codes that didn't match or inactive
+        //    var invalidEmployees = employeeCodes
+        //        .Where(code => !validEmployees.Any(v => v.EmployeeCode == code))
+        //        .ToList();
+
+        //    if (validEmployees.Count == 0)
+        //        throw new Exception("No valid active employees found in CSV.");
+
+        //    // Calculate total salary amount
+        //    decimal totalAmount = validEmployees.Sum(e => e.Salary);
+
+        //    if (client.Balance < totalAmount)
+        //        throw new Exception("Insufficient client balance.");
+
+        //    // Create batch record
+        //    var batch = new BatchTransaction
+        //    {
+        //        ClientId = clientId,
+        //        TotalTransactions = validEmployees.Count,
+        //        TotalAmount = totalAmount,
+        //        Date = TimeZoneInfo.ConvertTimeFromUtc(
+        //            DateTime.UtcNow,
+        //            TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
+        //        )
+        //    };
+        //    await _batchRepo.Add(batch);
+
+        //    // Perform salary disbursement
+        //    foreach (var emp in validEmployees)
+        //    {
+        //        emp.Balance += emp.Salary;
+        //        await _employeeRepo.UpdateEmployee(emp);
+
+        //        await _salaryRepo.Add(new SalaryDisbursement
+        //        {
+        //            ClientId = clientId,
+        //            EmployeeId = emp.EmployeeId,
+        //            Amount = emp.Salary,
+        //            Description = "Batch CSV Salary Disbursement",
+        //            BatchId = batch.BatchId,
+        //            Date = batch.Date
+        //        });
+        //    }
+
+        //    // Deduct from client
+        //    client.Balance -= totalAmount;
+        //    await _clientRepo.UpdateClient(client);
+
+        //    return new
+        //    {
+        //        created = validEmployees.Count,
+        //        skipped = invalidEmployees.Count,
+        //        skippedEmployees = invalidEmployees
+        //    };
+        //}
+
+
         [Authorize(Roles = "CLIENTUSER")]
         [HttpPost("upload-csv")]
         public async Task<object> ProcessBatchCsv(IFormFile file, [FromQuery] int clientId)
@@ -189,7 +280,7 @@ namespace Corporate_Banking_Payment_Application.Services
             while ((line = await stream.ReadLineAsync()) != null)
             {
                 lineNo++;
-                if (lineNo == 1) continue; // Skip header
+                if (lineNo == 1) continue;
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
                 employeeCodes.Add(line.Trim());
@@ -198,42 +289,43 @@ namespace Corporate_Banking_Payment_Application.Services
             if (employeeCodes.Count == 0)
                 throw new Exception("No employee codes found in CSV.");
 
-            // Get all employees for the client
             var employees = await _employeeRepo.GetEmployeesByClientId(clientId);
 
-            // Valid employees = match code & active
-            var validEmployees = employees
-                .Where(e => employeeCodes.Contains(e.EmployeeCode) && e.IsActive)
-                .ToList();
+            var validEmployees = new List<Employee>();
+            var skippedAlreadyPaid = new List<string>();
 
-            // Invalid = codes that didn't match or inactive
+            foreach (var emp in employees.Where(e => employeeCodes.Contains(e.EmployeeCode) && e.IsActive))
+            {
+                if (await HasReceivedSalaryInLast30Days(emp.EmployeeId))
+                {
+                    skippedAlreadyPaid.Add($"{emp.EmployeeCode} - {emp.FirstName} {emp.LastName}");
+                    continue;
+                }
+
+                validEmployees.Add(emp);
+            }
+
+            // ❗ Only those that are not found or inactive
             var invalidEmployees = employeeCodes
-                .Where(code => !validEmployees.Any(v => v.EmployeeCode == code))
+                .Where(code => !employees.Any(e => e.EmployeeCode == code && e.IsActive))
                 .ToList();
 
             if (validEmployees.Count == 0)
-                throw new Exception("No valid active employees found in CSV.");
+                throw new Exception("No valid employees eligible for payment (all recently paid or invalid).");
 
-            // Calculate total salary amount
             decimal totalAmount = validEmployees.Sum(e => e.Salary);
-
             if (client.Balance < totalAmount)
                 throw new Exception("Insufficient client balance.");
 
-            // Create batch record
             var batch = new BatchTransaction
             {
                 ClientId = clientId,
                 TotalTransactions = validEmployees.Count,
                 TotalAmount = totalAmount,
-                Date = TimeZoneInfo.ConvertTimeFromUtc(
-                    DateTime.UtcNow,
-                    TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
-                )
+                Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"))
             };
             await _batchRepo.Add(batch);
 
-            // Perform salary disbursement
             foreach (var emp in validEmployees)
             {
                 emp.Balance += emp.Salary;
@@ -250,17 +342,27 @@ namespace Corporate_Banking_Payment_Application.Services
                 });
             }
 
-            // Deduct from client
             client.Balance -= totalAmount;
             await _clientRepo.UpdateClient(client);
 
             return new
             {
                 created = validEmployees.Count,
-                skipped = invalidEmployees.Count,
-                skippedEmployees = invalidEmployees
+                skippedInvalid = invalidEmployees.Count,
+                skippedAlreadyPaid = skippedAlreadyPaid.Count,
+                invalidEmployees,
+                alreadyPaid = skippedAlreadyPaid
             };
         }
+
+        public async Task<bool> HasReceivedSalaryInLast30Days(int employeeId)
+        {
+            var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+
+            return await _context.SalaryDisbursements
+                .AnyAsync(s => s.EmployeeId == employeeId && s.Date >= thirtyDaysAgo);
+        }
+
 
 
     }

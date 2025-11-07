@@ -11,5 +11,7 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<bool> DeleteBatch(int id);
 
         Task<object> ProcessBatchCsv(IFormFile file, int clientId);
+
+        Task<bool> HasReceivedSalaryInLast30Days(int employeeId);
     }
 }

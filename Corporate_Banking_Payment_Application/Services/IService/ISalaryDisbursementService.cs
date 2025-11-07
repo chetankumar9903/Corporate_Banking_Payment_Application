@@ -13,5 +13,6 @@ namespace Corporate_Banking_Payment_Application.Services.IService
         Task<SalaryDisbursementDto> Create(CreateSalaryDisbursementDto dto);
         Task<SalaryDisbursementDto?> Update(int id, UpdateSalaryDisbursementDto dto);
         Task<bool> Delete(int id);
+
     }
 }
