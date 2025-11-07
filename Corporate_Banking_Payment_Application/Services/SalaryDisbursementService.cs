@@ -4,6 +4,7 @@ using Corporate_Banking_Payment_Application.DTOs;
 using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Repository.IRepository;
 using Corporate_Banking_Payment_Application.Services.IService;
+using Microsoft.EntityFrameworkCore;
 
 namespace Corporate_Banking_Payment_Application.Services
 {
@@ -180,6 +181,15 @@ namespace Corporate_Banking_Payment_Application.Services
 
             await _repo.Delete(existing);
             return true;
+        }
+
+
+        private async Task<bool> HasReceivedSalaryInLast30Days(int employeeId)
+        {
+            var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+
+            return await _context.SalaryDisbursements
+                .AnyAsync(s => s.EmployeeId == employeeId && s.Date >= thirtyDaysAgo);
         }
 
     }
