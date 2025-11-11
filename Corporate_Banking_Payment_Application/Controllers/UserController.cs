@@ -28,7 +28,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         public async Task<IActionResult> GetAllUsers(
             [FromQuery] string? searchTerm = null,
             [FromQuery] string? sortColumn = null,
-            [FromQuery] SortOrder? sortOrder = null, // Changed to enum
+            [FromQuery] SortOrder? sortOrder = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
@@ -84,14 +84,9 @@ namespace Corporate_Banking_Payment_Application.Controllers
             var users = await _service.GetAvailableClientUsers();
             return Ok(users);
         }
-        //[HttpGet("bankusers")]
-        //public async Task<IActionResult> GetBankUsers()
-        //{
-        //    var users = await _service.GetAllUsers(); // returns all users
-        //    var bankUsers = users.Where(u => u.UserRole == UserRole.BANKUSER)
-        //                         .Select(u => new { u.UserId, u.UserName });
-        //    return Ok(bankUsers);
-        //}
+
+
+
         [HttpGet("bankusers")]
         public async Task<IActionResult> GetBankUsers()
         {

@@ -29,7 +29,7 @@ namespace Corporate_Banking_Payment_Application.Services
         {
             var pagedResult = await _bankRepo.GetAllBank(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
 
-            // Map the items on the current page to DTOs
+
             var itemsDto = _mapper.Map<IEnumerable<BankDto>>(pagedResult.Items);
 
             return new PagedResult<BankDto>
@@ -47,7 +47,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<BankDto> CreateBank(CreateBankDto dto)
         {
-            // Validate User existence
+
             var userExists = await _userRepo.ExistsUser(dto.UserId);
             if (!userExists)
                 throw new Exception($"User with ID {dto.UserId} does not exist.");

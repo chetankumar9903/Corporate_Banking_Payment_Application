@@ -41,11 +41,11 @@ namespace Corporate_Banking_Payment_Application.Models
         public bool IsActive { get; set; } = true;
 
 
-        // Foreign Key
+
         [Required]
         public int ClientId { get; set; }
 
-        // Navigation Properties
+
         [ForeignKey("ClientId")]
         public Client? Client { get; set; }
 

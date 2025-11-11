@@ -25,12 +25,12 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<PagedResult<Document>> GetAllDocuments(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            // Include Customer and User for admin-level searching/sorting
+
             var query = _context.Documents
                 .Include(d => d.Customer).ThenInclude(c => c.User)
                 .AsNoTracking();
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -44,10 +44,10 @@ namespace Corporate_Banking_Payment_Application.Repository
                 );
             }
 
-            // Get TOTAL COUNT *after* searching
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
             if (!string.IsNullOrWhiteSpace(sortColumn))
@@ -63,7 +63,7 @@ namespace Corporate_Banking_Payment_Application.Repository
                     case "filesize":
                         query = isDescending ? query.OrderByDescending(d => d.FileSize) : query.OrderBy(d => d.FileSize);
                         break;
-                    case "lastname": // Sort by customer last name
+                    case "lastname":
                         query = isDescending ? query.OrderByDescending(d => d.Customer.User.LastName) : query.OrderBy(d => d.Customer.User.LastName);
                         break;
                     case "uploaddate":
@@ -74,11 +74,11 @@ namespace Corporate_Banking_Payment_Application.Repository
             }
             else
             {
-                // Default sort: Newest documents first
+
                 query = query.OrderByDescending(d => d.UploadDate);
             }
 
-            // 3. PAGINATION
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -93,7 +93,7 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<Document?> GetDocumentById(int id)
         {
-            // Include Customer navigation property
+
             return await _context.Documents
                 .Include(d => d.Customer)
                 .FirstOrDefaultAsync(d => d.DocumentId == id);
@@ -125,7 +125,7 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<IEnumerable<Document>> GetDocumentsByCustomerId(int customerId)
         {
-            // Custom query to efficiently retrieve documents for a specific customer
+
             return await _context.Documents
                 .Where(d => d.CustomerId == customerId)
                 .Include(d => d.Customer)

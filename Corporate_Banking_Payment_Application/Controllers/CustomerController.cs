@@ -51,8 +51,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCustomerDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            //var result = await _service.CreateCustomer(dto);
-            //return CreatedAtAction(nameof(GetById), new { id = result.CustomerId }, result);
+
 
             try
             {
@@ -71,8 +70,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            //var result = await _service.UpdateCustomer(id, dto);
-            //return Ok(result);
+
 
             try
             {
@@ -110,12 +108,6 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
         }
 
-        //[HttpGet("byUser/{userId}")]
-        //public async Task<IActionResult> GetByUserId(int userId)
-        //{
-        //    var result = await _service.GetCustomerByUserId(userId);
-        //    if (result == null) return NotFound();
-        //    return Ok(result);
-        //}
+
     }
 }

@@ -14,20 +14,18 @@ namespace Corporate_Banking_Payment_Application.Models
         public string DocumentName { get; set; } = string.Empty;
 
         [Required, MaxLength(50)]
-        public string DocumentType { get; set; } = string.Empty; // e.g. ID Proof, Address Proof
+        public string DocumentType { get; set; } = string.Empty;
 
-        // CLOUDINARY FIELDS 
+
         [Required, MaxLength(150)]
-        public string CloudinaryPublicId { get; set; } = string.Empty; // The identifier for management/deletion
+        public string CloudinaryPublicId { get; set; } = string.Empty;
 
         [Required, MaxLength(350)]
-        public string FileUrl { get; set; } = string.Empty; // The full secured URL for retrieval
-                                                            // ************************
+        public string FileUrl { get; set; } = string.Empty;
 
-        public long FileSize { get; set; } // in bytes
+        public long FileSize { get; set; }
 
         [Required]
-        // Setting the default time to India Standard Time (IST).
         public DateTime UploadDate { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(
         DateTime.UtcNow,
         TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
@@ -38,7 +36,7 @@ namespace Corporate_Banking_Payment_Application.Models
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation
+
         public Customer? Customer { get; set; }
     }
 }

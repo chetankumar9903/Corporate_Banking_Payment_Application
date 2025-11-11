@@ -15,14 +15,13 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            // Get settings from appsettings.json
+
             var host = _config["SmtpSettings:Host"];
             var port = int.Parse(_config["SmtpSettings:Port"]);
             var username = _config["SmtpSettings:Username"];
             var password = _config["SmtpSettings:Password"];
             var enableSsl = bool.Parse(_config["SmtpSettings:EnableSsl"]);
 
-            // Create the email message
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(username, "Corporate Banking App"),
@@ -32,7 +31,7 @@ namespace Corporate_Banking_Payment_Application.Services
             };
             mailMessage.To.Add(toEmail);
 
-            // Configure the SMTP client
+
             using (var smtpClient = new SmtpClient(host, port))
             {
                 smtpClient.Credentials = new NetworkCredential(username, password);

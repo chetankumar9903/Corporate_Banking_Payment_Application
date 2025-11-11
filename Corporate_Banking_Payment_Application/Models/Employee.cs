@@ -54,7 +54,7 @@ namespace Corporate_Banking_Payment_Application.Models
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation
+
         public Client? Client { get; set; }
         public ICollection<SalaryDisbursement>? SalaryDisbursements { get; set; }
     }

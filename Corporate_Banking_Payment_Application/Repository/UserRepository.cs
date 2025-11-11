@@ -22,7 +22,7 @@ namespace Corporate_Banking_Payment_Application.Repository
         {
             var query = _context.Users.AsNoTracking();
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -34,13 +34,13 @@ namespace Corporate_Banking_Payment_Application.Repository
                 );
             }
 
-            // Get TOTAL COUNT *after* searching, *before* sorting/pagination
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
-            // Sort logic
+
             if (!string.IsNullOrWhiteSpace(sortColumn))
             {
                 switch (sortColumn.ToLower())
@@ -61,18 +61,18 @@ namespace Corporate_Banking_Payment_Application.Repository
                         query = isDescending ? query.OrderByDescending(u => u.UserRole) : query.OrderBy(u => u.UserRole);
                         break;
                     default:
-                        // Default sort column if specified column is invalid
+
                         query = query.OrderBy(u => u.UserName);
                         break;
                 }
             }
             else
             {
-                // Default sort if no column is specified
+
                 query = query.OrderBy(u => u.UserName);
             }
 
-            // 3. PAGINATION
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -87,9 +87,8 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<User?> GetUserById(int id)
         {
-            //return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
             return await _context.Users
-        .Include(u => u.Customer) // <-- ADD THIS LINE
+        .Include(u => u.Customer)
         .FirstOrDefaultAsync(u => u.UserId == id);
         }
 
@@ -137,15 +136,14 @@ namespace Corporate_Banking_Payment_Application.Repository
         {
             return await _context.Users
               .AsNoTracking()
-                      // Find all users who are CLIENTUSERs...
+
                       .Where(u => u.UserRole == UserRole.CLIENTUSER &&
-                                  // ...and who do NOT exist in the Customers table
                                   !_context.Customers.Any(c => c.UserId == u.UserId))
               .ToListAsync();
         }
         public async Task<IEnumerable<User>> GetUnassignedBankUsersAsync()
         {
-            // Fetch all users with role BANKUSER
+
             return await _context.Users
        .Where(u => u.UserRole == UserRole.BANKUSER && u.Bank == null)
        .ToListAsync();

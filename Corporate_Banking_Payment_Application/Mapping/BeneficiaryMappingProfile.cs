@@ -8,13 +8,12 @@ namespace Corporate_Banking_Payment_Application.Mapping
     {
         public BeneficiaryMappingProfile()
         {
-            // Entity → DTO
+
             CreateMap<Beneficiary, BeneficiaryDto>();
 
-            // DTO → Entity
+
             CreateMap<CreateBeneficiaryDto, Beneficiary>();
 
-            // Update DTO → Entity (ignore nulls)
             CreateMap<UpdateBeneficiaryDto, Beneficiary>()
                 .ForAllMembers(opt => opt.Condition(
                     (src, dest, srcMember) => srcMember != null

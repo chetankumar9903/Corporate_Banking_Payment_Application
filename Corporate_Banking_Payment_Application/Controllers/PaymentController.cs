@@ -17,13 +17,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        ///// Retrieves a list of all payments.
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllPayments()
-        //{
-        //    var payments = await _service.GetAllPayments();
-        //    return Ok(payments);
-        //}
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllPayments(
@@ -37,7 +31,6 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(payments);
         }
 
-        /// Retrieves a specific payment by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPaymentById(int id)
         {
@@ -47,17 +40,17 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
-        /// Retrieves payments associated with a specific client
+
         [HttpGet("client/{clientId}")]
         public async Task<IActionResult> GetPaymentsByClientId(int clientId)
         {
             var payments = await _service.GetPaymentsByClientId(clientId);
-            // Returns 200 OK even if the list is empty, which is appropriate for a collection lookup.
+
             return Ok(payments);
         }
 
 
-        /// Retrieves payments associated with a specific beneficiary.
+
         [HttpGet("beneficiary/{beneficiaryId}")]
         public async Task<IActionResult> GetPaymentsByBeneficiaryId(int beneficiaryId)
         {
@@ -66,7 +59,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
-        /// Retrieves payments based on their status (PENDING, APPROVED, REJECTED).
+
         [HttpGet("status/{status}")]
         public async Task<IActionResult> GetPaymentsByStatus(Status status)
         {
@@ -75,7 +68,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
-        /// Creates a new payment request
+
         [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentDto dto)
@@ -85,18 +78,18 @@ namespace Corporate_Banking_Payment_Application.Controllers
             try
             {
                 var created = await _service.CreatePayment(dto);
-                // Return a 201 Created response with a location header
+
                 return CreatedAtAction(nameof(GetPaymentById), new { id = created.PaymentId }, created);
             }
             catch (Exception ex)
             {
-                // Catches exceptions from service layer (e.g., client/beneficiary not found)
+
                 return BadRequest(new { message = ex.Message });
             }
         }
 
 
-        /// Updates the status and rejection reason of an existing payment.
+
         [Authorize(Roles = "BANKUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePayment(int id, [FromBody] UpdatePaymentDto dto)
@@ -110,7 +103,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
-        /// Deletes a specific payment record
+
         [Authorize(Roles = "SUPERADMIN,BANKUSER,CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePayment(int id)
@@ -118,15 +111,14 @@ namespace Corporate_Banking_Payment_Application.Controllers
             var deleted = await _service.DeletePayment(id);
             if (!deleted)
             {
-                // This could mean the payment wasn't found (404) or couldn't be deleted 
-                // because it wasn't PENDING (400).
+
                 var exists = await _service.GetPaymentById(id);
                 if (exists == null) return NotFound();
 
                 return BadRequest(new { message = "Only PENDING payments can be deleted." });
             }
 
-            // 204 No Content is standard for successful deletion
+
             return NoContent();
         }
 

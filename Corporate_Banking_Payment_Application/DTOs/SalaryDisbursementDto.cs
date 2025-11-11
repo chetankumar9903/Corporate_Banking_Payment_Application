@@ -12,12 +12,12 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public string? Description { get; set; }
         public int? BatchId { get; set; }
 
-        // Optional: Employee/Client Details
+
         public string? EmployeeName { get; set; }
         public string? ClientCompanyName { get; set; }
     }
 
-    // ✅ For Creating
+
     public class CreateSalaryDisbursementDto
     {
         [Required]
@@ -35,7 +35,6 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public int? BatchId { get; set; }
     }
 
-    // ✅ For Updating
     public class UpdateSalaryDisbursementDto
     {
         [Range(1, double.MaxValue, ErrorMessage = "Amount must be greater than zero.")]

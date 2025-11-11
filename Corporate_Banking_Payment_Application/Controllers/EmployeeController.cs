@@ -17,13 +17,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        ///// Retrieves a list of all employees.
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllEmployees()
-        //{
-        //    var employees = await _service.GetAllEmployees();
-        //    return Ok(employees);
-        //}
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees(
@@ -37,7 +31,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(employees);
         }
 
-        /// Retrieves a specific employee by ID.
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById(int id)
         {
@@ -47,7 +41,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
-        /// Creates a new employee record.
+
         [Authorize(Roles = "CLIENTUSER")]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeDto dto)
@@ -57,18 +51,18 @@ namespace Corporate_Banking_Payment_Application.Controllers
             try
             {
                 var created = await _service.CreateEmployee(dto);
-                // Return a 201 Created response with a location header pointing to the new resource
+
                 return CreatedAtAction(nameof(GetEmployeeById), new { id = created.EmployeeId }, created);
             }
             catch (Exception ex)
             {
-                // This handles potential business logic exceptions (e.g., duplicate employee code)
+
                 return BadRequest(new { message = ex.Message });
             }
         }
 
 
-        /// Updates an existing employee record.
+
         [Authorize(Roles = "CLIENTUSER")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
@@ -82,16 +76,11 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
 
-        /// Deletes a specific employee record
         [Authorize(Roles = "CLIENTUSER")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            //var deleted = await _service.DeleteEmployee(id);
-            //if (!deleted) return NotFound();
 
-            //// 204 No Content is standard for successful deletion
-            //return NoContent();
             try
             {
                 await _service.DeleteEmployee(id);
@@ -130,14 +119,14 @@ namespace Corporate_Banking_Payment_Application.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "CSV file is required." });
 
-            // Only allow CSV
+
             if (!file.FileName.EndsWith(".csv"))
                 return BadRequest(new { message = "Only CSV files are allowed." });
 
             try
             {
                 var result = await _service.ProcessEmployeeCsv(file, clientId);
-                return Ok(result); // { created: x, skipped: y }
+                return Ok(result);
             }
             catch (Exception ex)
             {

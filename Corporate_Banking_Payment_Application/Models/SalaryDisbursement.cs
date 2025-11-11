@@ -29,7 +29,7 @@ namespace Corporate_Banking_Payment_Application.Models
         [ForeignKey("BatchTransaction")]
         public int? BatchId { get; set; }
 
-        // Navigation
+
         public Client? Client { get; set; }
         public Employee? Employee { get; set; }
         public BatchTransaction? BatchTransaction { get; set; }

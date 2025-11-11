@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Corporate_Banking_Payment_Application.DTOs
 {
-    // DTO for requesting a new report generation (Input DTO)
+
     public class GenerateReportRequestDto
     {
         [Required(ErrorMessage = "Report name is required.")]
@@ -16,14 +16,14 @@ namespace Corporate_Banking_Payment_Application.DTOs
         [Required(ErrorMessage = "Output format (PDF or EXCEL) is required.")]
         public ReportOutputFormat OutputFormat { get; set; }
 
-        // Optional filter properties
+
         public int? ClientId { get; set; }
         public Status? PaymentStatusFilter { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
     }
 
-    // DTO for displaying a saved report record (Output DTO)
+
     public class ReportDto
     {
         public int ReportId { get; set; }
@@ -35,7 +35,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public string FilePath { get; set; } = string.Empty;
     }
 
-    // DTO used for mapping a new report record before saving to DB (Internal DTO)
+
     public class CreateReportDto
     {
         [Required]
@@ -65,15 +65,14 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public string? Description { get; set; }
     }
 
-    // --- THIS DTO IS UPDATED ---
+
     public class PaymentReportDto
     {
         public int PaymentId { get; set; }
 
-        // --- UPDATED ---
+
         public string ClientName { get; set; } = string.Empty;
         public string BeneficiaryName { get; set; } = string.Empty;
-        // --- END OF UPDATE ---
 
         public decimal Amount { get; set; }
         public DateTime RequestDate { get; set; }
@@ -83,15 +82,14 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public string? RejectReason { get; set; }
     }
 
-    // --- THIS DTO IS UPDATED ---
     public class SalaryReportDto
     {
         public int SalaryDisbursementId { get; set; }
 
-        // --- UPDATED ---
+
         public string ClientName { get; set; } = string.Empty;
         public string EmployeeName { get; set; } = string.Empty;
-        // --- END OF UPDATE ---
+
 
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }

@@ -10,9 +10,9 @@ namespace Corporate_Banking_Payment_Application.Repository.IRepository
         Task<IEnumerable<SalaryDisbursement>> GetByClientId(int clientId);
         Task<IEnumerable<SalaryDisbursement>> GetByEmployeeId(int employeeId);
         Task<SalaryDisbursement> Add(SalaryDisbursement entity);
-        //Task<SalaryDisbursement> Update(SalaryDisbursement entity);
+
         Task Update(SalaryDisbursement entity);
-        //Task<bool> Delete(int id);
+
         Task Delete(SalaryDisbursement entity);
     }
 }

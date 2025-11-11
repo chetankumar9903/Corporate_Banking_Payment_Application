@@ -25,13 +25,13 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<PagedResult<Employee>> GetAllEmployees(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            // Base query MUST include dependencies for searching and sorting
+
             var query = _context.Employees
                 .Where(e => e.IsActive)
                 .Include(e => e.Client)
                 .AsNoTracking();
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -44,10 +44,10 @@ namespace Corporate_Banking_Payment_Application.Repository
                 );
             }
 
-            // Get TOTAL COUNT *after* searching
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
             if (!string.IsNullOrWhiteSpace(sortColumn))
@@ -80,11 +80,11 @@ namespace Corporate_Banking_Payment_Application.Repository
             }
             else
             {
-                // Default sort
+
                 query = query.OrderBy(e => e.LastName);
             }
 
-            // 3. PAGINATION
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -100,7 +100,7 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<Employee?> GetEmployeeById(int id)
         {
-            // Include Client navigation property for richer data fetching
+
             return await _context.Employees
                 .Include(e => e.Client)
                 .FirstOrDefaultAsync(e => e.EmployeeId == id);
@@ -121,10 +121,9 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task DeleteEmployee(Employee employee)
         {
-            //_context.Employees.Remove(employee);
-            //await _context.SaveChangesAsync();
 
-            employee.IsActive = false;  // Soft delete
+
+            employee.IsActive = false;
             _context.Employees.Update(employee);
             await _context.SaveChangesAsync();
         }

@@ -32,7 +32,7 @@ namespace Corporate_Banking_Payment_Application.Services
         {
             var pagedResult = await _clientRepo.GetAllClients(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
 
-            // Map the items on the current page to DTOs
+
             var itemsDto = _mapper.Map<IEnumerable<ClientDto>>(pagedResult.Items);
 
             return new PagedResult<ClientDto>
@@ -64,17 +64,16 @@ namespace Corporate_Banking_Payment_Application.Services
                 throw new Exception("This customer is already registered as a client.");
 
 
-            // 1 Map DTO to entity
+
             var client = _mapper.Map<Client>(dto);
             client.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, 0);
 
-            // 2 Save first to get ClientId
+
             var createdClient = await _clientRepo.AddClient(client);
 
-            // 3 Generate account number using Bank + ClientId
+
             createdClient.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, createdClient.ClientId);
 
-            // 4 Update client with the generated account number
             await _clientRepo.UpdateClient(createdClient);
 
             return _mapper.Map<ClientDto>(createdClient);
@@ -95,7 +94,7 @@ namespace Corporate_Banking_Payment_Application.Services
             return await _clientRepo.DeleteClient(id);
         }
 
-        // Last Method: Get client by CustomerId
+
         public async Task<ClientDto?> GetClientByCustomerId(int customerId)
         {
             var client = await _clientRepo.GetClientByCustomerId(customerId);
@@ -110,21 +109,21 @@ namespace Corporate_Banking_Payment_Application.Services
             if (!existing.IsActive)
                 throw new Exception("Cannot transact on an inactive client account.");
 
-            // Use the TransactionType enum to determine logic
+
             if (dto.TransactionType == TransactionType.DEPOSIT)
             {
-                // Add the amount to the balance
+
                 existing.Balance += dto.Amount;
             }
             else if (dto.TransactionType == TransactionType.WITHDRAW)
             {
-                // Check for insufficient funds
+
                 if (existing.Balance < dto.Amount)
                 {
                     throw new Exception($"Insufficient funds. Current balance is {existing.Balance:C}, but withdrawal is {dto.Amount:C}.");
                 }
 
-                // Subtract the amount from the balance
+
                 existing.Balance -= dto.Amount;
             }
             else
@@ -133,9 +132,6 @@ namespace Corporate_Banking_Payment_Application.Services
             }
 
             var updated = await _clientRepo.UpdateClient(existing);
-
-            // NOTE: For a real application, you would also create a new record 
-            // in a 'ClientTransactions' table here for auditing purposes.
 
             return _mapper.Map<ClientDto>(updated);
         }

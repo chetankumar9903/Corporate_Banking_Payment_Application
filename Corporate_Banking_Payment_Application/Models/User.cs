@@ -33,7 +33,7 @@ namespace Corporate_Banking_Payment_Application.Models
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation
+
         public Customer? Customer { get; set; }
         public Bank? Bank { get; set; }
         public ICollection<Report>? Reports { get; set; }

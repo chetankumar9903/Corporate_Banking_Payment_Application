@@ -93,11 +93,11 @@ namespace Corporate_Banking_Payment_Application.Services
             if (employee.ClientId != client.ClientId)
                 throw new Exception("Employee does not belong to this client.");
 
-            // Validate sufficient balance
+
             if (client.Balance < dto.Amount)
                 throw new Exception("Insufficient client balance to disburse salary.");
 
-            // 4️⃣ If BatchId is provided, validate it
+
             BatchTransaction? batch = null;
             if (dto.BatchId.HasValue)
             {
@@ -106,7 +106,7 @@ namespace Corporate_Banking_Payment_Application.Services
             }
 
 
-            // Transaction ensures atomic client-employee update
+
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
@@ -164,17 +164,13 @@ namespace Corporate_Banking_Payment_Application.Services
             }
 
             _mapper.Map(dto, existing);
-
-            //var updated = await _repo.Update(existing);
-            //return _mapper.Map<SalaryDisbursementDto>(updated);
-
             await _repo.Update(existing);
             return _mapper.Map<SalaryDisbursementDto>(existing);
         }
 
         public async Task<bool> Delete(int id)
         {
-            //return await _repo.Delete(id);
+
 
             var existing = await _repo.GetById(id);
             if (existing == null) return false;

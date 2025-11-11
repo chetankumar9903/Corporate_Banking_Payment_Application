@@ -56,7 +56,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<BatchTransactionDto> CreateBatch(CreateBatchTransactionDto dto)
         {
-            // Validate client
+
             var client = await _clientRepo.GetClientById(dto.ClientId)
                 ?? throw new Exception($"Client with ID {dto.ClientId} not found.");
 
@@ -79,14 +79,13 @@ namespace Corporate_Banking_Payment_Application.Services
                 employees.Add(emp);
             }
 
-            // 🧮 Verify provided amount matches calculated total
             if (dto.TotalAmount != totalCalculated)
                 throw new Exception($"Provided total ({dto.TotalAmount}) does not match calculated total ({totalCalculated}).");
 
             if (client.Balance < totalCalculated)
                 throw new Exception("Insufficient client balance for batch disbursement.");
 
-            // Ensure atomicity
+
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
@@ -135,34 +134,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 throw;
             }
 
-            //// Map Batch
-            //var batch = new BatchTransaction
-            //{
-            //    ClientId = dto.ClientId,
-            //    Date = TimeZoneInfo.ConvertTimeFromUtc(
-            //        DateTime.UtcNow,
-            //        TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
-            //    ),
-            //    TotalTransactions = dto.Disbursements.Count,
-            //    TotalAmount = dto.Disbursements.Sum(d => d.Amount)
-            //};
 
-            //// Save batch first
-            //var createdBatch = await _batchRepo.Add(batch);
-
-            //// Create salary disbursements under this batch
-            //foreach (var disbursementDto in dto.Disbursements)
-            //{
-            //    var disbursement = _mapper.Map<SalaryDisbursement>(disbursementDto);
-            //    disbursement.BatchId = createdBatch.BatchId;
-            //    disbursement.Date = batch.Date;
-
-            //    await _salaryRepo.Add(disbursement);
-            //}
-
-            //// Reload with included salaries
-            //var fullBatch = await _batchRepo.GetById(createdBatch.BatchId);
-            //return _mapper.Map<BatchTransactionDto>(fullBatch);
         }
 
         public async Task<bool> DeleteBatch(int id)
@@ -305,7 +277,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 validEmployees.Add(emp);
             }
 
-            // ❗ Only those that are not found or inactive
+
             var invalidEmployees = employeeCodes
                 .Where(code => !employees.Any(e => e.EmployeeCode == code && e.IsActive))
                 .ToList();

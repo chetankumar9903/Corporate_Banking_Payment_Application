@@ -24,12 +24,12 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<PagedResult<Bank>> GetAllBank(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            // Base query MUST include dependencies for searching and sorting
+
             var query = _context.Banks
                 .Include(b => b.User)
                 .AsNoTracking();
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -45,15 +45,15 @@ namespace Corporate_Banking_Payment_Application.Repository
                 );
             }
 
-            // Get TOTAL COUNT *after* searching
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
             if (!string.IsNullOrWhiteSpace(sortColumn))
             {
-                // Adhering to the rule of using lowercase property names
+
                 switch (sortColumn.ToLower())
                 {
                     case "branch":
@@ -62,7 +62,7 @@ namespace Corporate_Banking_Payment_Application.Repository
                     case "ifsccode":
                         query = isDescending ? query.OrderByDescending(b => b.IFSCCode) : query.OrderBy(b => b.IFSCCode);
                         break;
-                    case "lastname": // User's last name
+                    case "lastname":
                         query = isDescending ? query.OrderByDescending(b => b.User.LastName) : query.OrderBy(b => b.User.LastName);
                         break;
                     case "bankname":
@@ -73,11 +73,11 @@ namespace Corporate_Banking_Payment_Application.Repository
             }
             else
             {
-                // Default sort
+
                 query = query.OrderBy(b => b.BankName);
             }
 
-            // 3. PAGINATION
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -124,7 +124,7 @@ namespace Corporate_Banking_Payment_Application.Repository
         public async Task<Bank?> GetBankByUsername(string username)
         {
             return await _context.Banks
-                .Include(b => b.User) // We must include the User to search
+                .Include(b => b.User)
                 .FirstOrDefaultAsync(b => b.User != null && b.User.UserName == username);
         }
     }

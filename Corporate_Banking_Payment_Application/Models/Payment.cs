@@ -28,7 +28,7 @@ namespace Corporate_Banking_Payment_Application.Models
         public DateTime? ProcessedDate { get; set; }
 
         [Required]
-        public Status PaymentStatus { get; set; } = Status.PENDING; // Pending, Approved, Rejected
+        public Status PaymentStatus { get; set; } = Status.PENDING;
 
         [MaxLength(200)]
         public string? Description { get; set; }
@@ -36,7 +36,6 @@ namespace Corporate_Banking_Payment_Application.Models
         [MaxLength(200)]
         public string? RejectReason { get; set; }
 
-        // Navigation
         public Client? Client { get; set; }
         public Beneficiary? Beneficiary { get; set; }
     }

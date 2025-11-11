@@ -25,7 +25,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         [Required]
         public int BankId { get; set; }
 
-        //public Status VerificationStatus { get; set; } = Status.PENDING;
+
     }
 
     public class UpdateCustomerDto
