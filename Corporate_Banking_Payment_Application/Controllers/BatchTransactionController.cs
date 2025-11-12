@@ -44,7 +44,8 @@ namespace Corporate_Banking_Payment_Application.Controllers
             try
             {
                 var created = await _service.CreateBatch(dto);
-                return CreatedAtAction(nameof(GetById), new { id = created.BatchId }, created);
+                //return CreatedAtAction(nameof(GetById), new { id = created.BatchId }, created);
+                return Ok(created);
             }
             catch (Exception ex)
             {

@@ -54,7 +54,92 @@ namespace Corporate_Banking_Payment_Application.Services
             return _mapper.Map<IEnumerable<BatchTransactionDto>>(list);
         }
 
-        public async Task<BatchTransactionDto> CreateBatch(CreateBatchTransactionDto dto)
+        //public async Task<BatchTransactionDto> CreateBatch(CreateBatchTransactionDto dto)
+        //{
+
+        //    var client = await _clientRepo.GetClientById(dto.ClientId)
+        //        ?? throw new Exception($"Client with ID {dto.ClientId} not found.");
+
+        //    if (!client.IsActive)
+        //        throw new Exception("Client account is inactive.");
+
+        //    var employees = new List<Employee>();
+        //    decimal totalCalculated = 0;
+
+        //    foreach (var empId in dto.EmployeeIds)
+        //    {
+        //        var emp = await _employeeRepo.GetEmployeeById(empId)
+        //            ?? throw new Exception($"Employee with ID {empId} not found.");
+        //        if (!emp.IsActive)
+        //            throw new Exception($"Employee {emp.FirstName} is inactive.");
+        //        if (emp.ClientId != client.ClientId)
+        //            throw new Exception($"Employee {emp.FirstName} does not belong to this client.");
+
+        //        totalCalculated += emp.Salary;
+        //        employees.Add(emp);
+        //    }
+
+        //    if (dto.TotalAmount != totalCalculated)
+        //        throw new Exception($"Provided total ({dto.TotalAmount}) does not match calculated total ({totalCalculated}).");
+
+        //    if (client.Balance < totalCalculated)
+        //        throw new Exception("Insufficient client balance for batch disbursement.");
+
+
+        //    using var transaction = await _context.Database.BeginTransactionAsync();
+
+        //    try
+        //    {
+        //        var batch = new BatchTransaction
+        //        {
+        //            ClientId = client.ClientId,
+        //            TotalTransactions = employees.Count,
+        //            TotalAmount = totalCalculated,
+        //            Date = TimeZoneInfo.ConvertTimeFromUtc(
+        //                DateTime.UtcNow,
+        //                TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
+        //            )
+        //        };
+
+        //        client.Balance -= totalCalculated;
+        //        await _clientRepo.UpdateClient(client);
+
+        //        await _batchRepo.Add(batch);
+
+        //        foreach (var emp in employees)
+        //        {
+        //            emp.Balance += emp.Salary;
+        //            await _employeeRepo.UpdateEmployee(emp);
+
+        //            var disbursement = new SalaryDisbursement
+        //            {
+        //                ClientId = client.ClientId,
+        //                EmployeeId = emp.EmployeeId,
+        //                Amount = emp.Salary,
+        //                Description = dto.Description ?? "Batch Salary Disbursement",
+        //                BatchId = batch.BatchId,
+        //                Date = batch.Date
+        //            };
+        //            await _salaryRepo.Add(disbursement);
+        //        }
+
+        //        await transaction.CommitAsync();
+
+        //        var created = await _batchRepo.GetById(batch.BatchId);
+        //        return _mapper.Map<BatchTransactionDto>(created);
+        //    }
+        //    catch
+        //    {
+        //        await transaction.RollbackAsync();
+        //        throw;
+        //    }
+
+
+        //}
+
+
+
+        public async Task<object> CreateBatch(CreateBatchTransactionDto dto)
         {
 
             var client = await _clientRepo.GetClientById(dto.ClientId)
@@ -64,6 +149,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 throw new Exception("Client account is inactive.");
 
             var employees = new List<Employee>();
+            var skippedAlreadyPaid = new List<string>();
             decimal totalCalculated = 0;
 
             foreach (var empId in dto.EmployeeIds)
@@ -75,10 +161,25 @@ namespace Corporate_Banking_Payment_Application.Services
                 if (emp.ClientId != client.ClientId)
                     throw new Exception($"Employee {emp.FirstName} does not belong to this client.");
 
+                if (await HasReceivedSalaryInLast30Days(emp.EmployeeId))
+                {
+                    skippedAlreadyPaid.Add($"{emp.FirstName} {emp.LastName} (Code: {emp.EmployeeCode})");
+                    continue;
+                }
+
                 totalCalculated += emp.Salary;
                 employees.Add(emp);
             }
+            if (employees.Count == 0)
+            {
+                throw new Exception("No eligible employees for payment. All selected employees were paid within the last 30 days.");
+            }
 
+
+            //if (dto.TotalAmount != totalCalculated)
+            //    throw new Exception($"Provided total ({dto.TotalAmount}) does not match calculated total ({totalCalculated}).");
+
+            dto.TotalAmount = totalCalculated;
             if (dto.TotalAmount != totalCalculated)
                 throw new Exception($"Provided total ({dto.TotalAmount}) does not match calculated total ({totalCalculated}).");
 
@@ -126,7 +227,13 @@ namespace Corporate_Banking_Payment_Application.Services
                 await transaction.CommitAsync();
 
                 var created = await _batchRepo.GetById(batch.BatchId);
-                return _mapper.Map<BatchTransactionDto>(created);
+                //return _mapper.Map<BatchTransactionDto>(created);
+                return new
+                {
+                    success = true,
+                    batch = _mapper.Map<BatchTransactionDto>(created),
+                    skippedAlreadyPaid
+                };
             }
             catch
             {
@@ -327,13 +434,26 @@ namespace Corporate_Banking_Payment_Application.Services
             };
         }
 
+        //public async Task<bool> HasReceivedSalaryInLast30Days(int employeeId)
+        //{
+        //    var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+
+        //    return await _context.SalaryDisbursements
+        //        .AnyAsync(s => s.EmployeeId == employeeId && s.Date >= thirtyDaysAgo);
+        //}
+
         public async Task<bool> HasReceivedSalaryInLast30Days(int employeeId)
         {
-            var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+            var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            var currentIstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istZone);
+
+            var thirtyDaysAgoIst = currentIstTime.AddDays(-30);
 
             return await _context.SalaryDisbursements
-                .AnyAsync(s => s.EmployeeId == employeeId && s.Date >= thirtyDaysAgo);
+                .AnyAsync(s => s.EmployeeId == employeeId && s.Date >= thirtyDaysAgoIst);
         }
+
 
 
 
