@@ -51,32 +51,29 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<PaymentDto> CreatePayment(CreatePaymentDto dto)
         {
-            //// Note: In a real-world scenario, you would add validation here
-            //// to ensure both ClientId and BeneficiaryId exist before proceeding
 
-            // 1️ Check client exists
             var client = await _clientRepo.GetClientById(dto.ClientId)
                 ?? throw new Exception($"Client with ID {dto.ClientId} not found.");
 
             if (!client.IsActive)
                 throw new Exception("Client account is inactive. Cannot initiate payment.");
 
-            // 2️ Check beneficiary exists
+
             var beneficiary = await _beneficiaryRepo.GetBeneficiaryById(dto.BeneficiaryId)
                 ?? throw new Exception($"Beneficiary with ID {dto.BeneficiaryId} not found.");
 
             if (!beneficiary.IsActive)
                 throw new Exception("Beneficiary is inactive. Cannot make payment.");
 
-            // 3️ Ensure beneficiary belongs to this client
+
             if (beneficiary.ClientId != dto.ClientId)
                 throw new Exception("Unauthorized: Beneficiary does not belong to this client.");
 
-            // 4️ Check sufficient client balance
+
             if (client.Balance < dto.Amount)
                 throw new Exception("Insufficient balance to process this payment request.");
 
-            // 5️ Prevent duplicate pending payment for same beneficiary and amount
+
             var existingPayments = await _paymentRepo.GetPaymentsByClientId(dto.ClientId);
             if (existingPayments.Any(p => p.BeneficiaryId == dto.BeneficiaryId &&
                                           p.Amount == dto.Amount &&
@@ -85,7 +82,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 throw new Exception("Duplicate pending payment detected for the same beneficiary and amount.");
             }
 
-            // 6️ Create the payment entity
+
             var payment = _mapper.Map<Payment>(dto);
             payment.RequestDate = TimeZoneInfo.ConvertTimeFromUtc(
                 DateTime.UtcNow,
@@ -93,7 +90,6 @@ namespace Corporate_Banking_Payment_Application.Services
             );
             payment.PaymentStatus = Status.PENDING;
 
-            // 7️ Save payment
             var created = await _paymentRepo.AddPayment(payment);
 
             return _mapper.Map<PaymentDto>(created);
@@ -105,27 +101,26 @@ namespace Corporate_Banking_Payment_Application.Services
             var existing = await _paymentRepo.GetPaymentById(id)
        ?? throw new Exception($"Payment with ID {id} not found.");
 
-            // Allow only pending payments to be updated
+
             if (existing.PaymentStatus != Status.PENDING)
                 throw new Exception("Only pending payments can be updated.");
 
-            // Validate new status
+
             if (!dto.PaymentStatus.HasValue)
                 throw new Exception("Payment status update is required.");
 
             var newStatus = dto.PaymentStatus.Value;
 
-            // Process transitions
+
             if (newStatus == Status.APPROVED)
             {
                 var client = await _clientRepo.GetClientById(existing.ClientId)
                     ?? throw new Exception("Client not found for this payment.");
 
-                // Check balance again before deducting
+
                 if (client.Balance < existing.Amount)
                     throw new Exception("Insufficient balance to approve payment.");
 
-                // Deduct balance
                 client.Balance -= existing.Amount;
                 await _clientRepo.UpdateClient(client);
 
@@ -158,11 +153,10 @@ namespace Corporate_Banking_Payment_Application.Services
             var payment = await _paymentRepo.GetPaymentById(id);
             if (payment == null) return false;
 
-            // Business Rule: Only allow deletion of PENDING payments.
+
             if (payment.PaymentStatus != Status.PENDING)
             {
-                // Throw an exception or return false based on required handling
-                // throw new InvalidOperationException("Cannot delete a payment that is not in PENDING status.");
+
                 return false;
             }
 
@@ -170,7 +164,7 @@ namespace Corporate_Banking_Payment_Application.Services
             return true;
         }
 
-        // Utility/Query Methods Implementation
+
         public async Task<IEnumerable<PaymentDto>> GetPaymentsByClientId(int clientId)
         {
             var payments = await _paymentRepo.GetPaymentsByClientId(clientId);

@@ -180,6 +180,8 @@ namespace Corporate_Banking_Payment_Application.Services
             //    throw new Exception($"Provided total ({dto.TotalAmount}) does not match calculated total ({totalCalculated}).");
 
             dto.TotalAmount = totalCalculated;
+            if (dto.TotalAmount != totalCalculated)
+                throw new Exception($"Provided total ({dto.TotalAmount}) does not match calculated total ({totalCalculated}).");
 
             if (client.Balance < totalCalculated)
                 throw new Exception("Insufficient client balance for batch disbursement.");
@@ -238,6 +240,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 await transaction.RollbackAsync();
                 throw;
             }
+
 
         }
 

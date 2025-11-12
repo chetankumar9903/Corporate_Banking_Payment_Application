@@ -23,7 +23,6 @@ namespace Corporate_Banking_Payment_Application.Models
         [Required]
         public decimal TotalAmount { get; set; }
 
-        // Navigation
         public Client? Client { get; set; }
         public ICollection<SalaryDisbursement>? SalaryDisbursements { get; set; }
     }

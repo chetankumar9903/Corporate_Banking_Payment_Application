@@ -84,6 +84,9 @@ namespace Corporate_Banking_Payment_Application
             //authentication
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+            //Email (smtp)
+            builder.Services.AddScoped<IEmailService, EmailService>();
+
             // automapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -95,35 +98,32 @@ namespace Corporate_Banking_Payment_Application
         options.JsonSerializerOptions.Converters.Add(
             new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
 
 
-            // TODO: add Authentication (JWT), Authorization, AutoMapper, Repositories, Services, etc.
 
-            // 1. Get configuration settings for Cloudinary (assuming they are in appsettings.json or secrets)
             var cloudinaryAccount = new Account(
                  builder.Configuration["CloudinarySettings:CloudName"],
                  builder.Configuration["CloudinarySettings:ApiKey"],
                  builder.Configuration["CloudinarySettings:ApiSecret"]
             );
 
-            // 2. Register the Cloudinary client as a Singleton
-            // Singleton is appropriate because the client object is thread-safe and expensive to create.
+
             var cloudinary = new Cloudinary(cloudinaryAccount) { Api = { Secure = true } };
             builder.Services.AddSingleton(cloudinary);
 
 
-            //2. jwt
+
             var jwtKey = builder.Configuration["Jwt:Key"];
 
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
             })
             .AddJwtBearer(options =>
             {
@@ -144,7 +144,7 @@ namespace Corporate_Banking_Payment_Application
             builder.Services.AddAuthorization();
 
 
-            // 3. add cors  request origin
+
 
             builder.Services.AddCors(opt =>
             {
@@ -165,11 +165,6 @@ namespace Corporate_Banking_Payment_Application
             //    builder.SetMinimumLevel(LogLevel.Error);
             //});
 
-
-
-
-
-
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -177,7 +172,7 @@ namespace Corporate_Banking_Payment_Application
                     Version = "v1",
                     Title = "Corporate Banking Payment Application"
                 });
-                //Define Security Scheme for JWT BEarer Tokens
+
                 var securityScheme = new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -194,7 +189,7 @@ namespace Corporate_Banking_Payment_Application
                 };
                 options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
 
-                //Add Security Requirement
+
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         { securityScheme, new string[]{ } }
@@ -209,12 +204,7 @@ namespace Corporate_Banking_Payment_Application
 
 
 
-            // Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
-            //{
-            //    app.UseSwagger();
-            //    app.UseSwaggerUI();
-            //}
+
 
             if (app.Environment.IsDevelopment())
 
@@ -222,7 +212,7 @@ namespace Corporate_Banking_Payment_Application
 
                 app.UseSwagger();
 
-                //Configure the Swagger UI Options ==============================
+
 
                 app.UseSwaggerUI(options =>
 
@@ -238,7 +228,7 @@ namespace Corporate_Banking_Payment_Application
             app.UseCors("MyPolicy");
             app.UseHttpsRedirection();
 
-            //app.UseAuthorization();
+
             app.UseAuthentication();
             app.UseAuthorization();
 

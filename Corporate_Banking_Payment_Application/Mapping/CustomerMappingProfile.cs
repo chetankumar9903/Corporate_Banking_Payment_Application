@@ -8,14 +8,14 @@ namespace Corporate_Banking_Payment_Application.Mapping
     {
         public CustomerMappingProfile()
         {
-            // ✅ Entity → DTO
+
             CreateMap<Customer, CustomerDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.UserName : null))
                 .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.Bank != null ? src.Bank.BankName : null));
 
-            // ✅ DTO → Entity
+
             CreateMap<CreateCustomerDto, Customer>()
-                .ForMember(dest => dest.CustomerId, opt => opt.Ignore()) // ID auto-generated
+                .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
                 .ForMember(dest => dest.OnboardingDate, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true));
 

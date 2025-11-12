@@ -28,7 +28,7 @@ namespace Corporate_Banking_Payment_Application.Models
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation
+
         public User? User { get; set; }
         public ICollection<Customer>? Customers { get; set; }
 

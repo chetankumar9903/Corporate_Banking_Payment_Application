@@ -24,13 +24,13 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<PagedResult<Client>> GetAllClients(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            // Base query MUST include dependencies for searching and sorting
+
             var query = _context.Clients
                 .Include(c => c.Customer).ThenInclude(cust => cust.User)
                 .Include(c => c.Bank)
                 .AsNoTracking();
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -46,15 +46,15 @@ namespace Corporate_Banking_Payment_Application.Repository
                 );
             }
 
-            // Get TOTAL COUNT *after* searching
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
             if (!string.IsNullOrWhiteSpace(sortColumn))
             {
-                // Adhering to the rule of using lowercase property names
+
                 switch (sortColumn.ToLower())
                 {
                     case "accountnumber":
@@ -67,7 +67,7 @@ namespace Corporate_Banking_Payment_Application.Repository
                             ? query.OrderByDescending(c => c.Balance)
                             : query.OrderBy(c => c.Balance);
                         break;
-                    case "lastname": // Sort by the associated User's last name
+                    case "lastname":
                         query = isDescending
                             ? query.OrderByDescending(c => c.Customer.User.LastName)
                             : query.OrderBy(c => c.Customer.User.LastName);
@@ -87,11 +87,11 @@ namespace Corporate_Banking_Payment_Application.Repository
             }
             else
             {
-                // Default sort
+
                 query = query.OrderBy(c => c.CompanyName);
             }
 
-            // 3. PAGINATION
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)

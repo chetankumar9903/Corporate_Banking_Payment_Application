@@ -16,6 +16,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         {
             _service = service;
         }
+
         ////[Authorize(Roles = "SUPERADMIN")]
         //[HttpGet]
         //public async Task<IActionResult> GetAllBank()
@@ -25,7 +26,6 @@ namespace Corporate_Banking_Payment_Application.Controllers
         //}
 
         [Authorize(Roles = "SUPERADMIN")]
-        // MODIFIED: This endpoint now accepts query parameters
         [HttpGet]
         public async Task<IActionResult> GetAllBank(
             [FromQuery] string? searchTerm = null,

@@ -9,19 +9,19 @@ namespace Corporate_Banking_Payment_Application.Mapping
         public UserMappingProfile()
         {
 
-            // User -> UserDto
+
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.UserRole,
-                           opt => opt.MapFrom(src => src.UserRole.ToString())); // Enum to string
+                           opt => opt.MapFrom(src => src.UserRole.ToString()));
 
-            // CreateUserDto -> User (hash password)
+
             CreateMap<CreateUserDto, User>()
                 .ForMember(dest => dest.Password,
                            opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Password)))
                 .ForMember(dest => dest.UserRole,
                            opt => opt.MapFrom(src => src.UserRole));
 
-            // UpdateUserDto -> User
+
             CreateMap<UpdateUserDto, User>()
                 .ForMember(dest => dest.UserRole,
                            opt => opt.MapFrom(src => src.UserRole));

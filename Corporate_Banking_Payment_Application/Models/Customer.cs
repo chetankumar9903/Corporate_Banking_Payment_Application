@@ -21,11 +21,11 @@ namespace Corporate_Banking_Payment_Application.Models
     );
 
         [Required]
-        public Status VerificationStatus { get; set; } = Status.PENDING; // Pending/Approved/Rejected
+        public Status VerificationStatus { get; set; } = Status.PENDING;
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation
+
         public User? User { get; set; }
         public Bank? Bank { get; set; }
         public Client? Client { get; set; }

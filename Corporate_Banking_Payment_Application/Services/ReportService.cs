@@ -6,8 +6,6 @@ using Corporate_Banking_Payment_Application.Models;
 using Corporate_Banking_Payment_Application.Repository.IRepository;
 using Corporate_Banking_Payment_Application.Services.IService;
 using Corporate_Banking_Payment_Application.Utilities;
-using Microsoft.Extensions.Logging;
-using System.Reflection;
 
 namespace Corporate_Banking_Payment_Application.Services
 {
@@ -44,7 +42,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<ReportDto> GenerateAndSaveReport(GenerateReportRequestDto request, int currentUserId, UserRole currentUserRole)
         {
-            // 1. Validate and Authorize Request (Unchanged)
+
             var user = await ValidateAndAuthorizeRequest(request, currentUserId, currentUserRole);
 
             if (!request.ClientId.HasValue)
@@ -55,7 +53,6 @@ namespace Corporate_Banking_Payment_Application.Services
             var clientId = request.ClientId.Value;
             MemoryStream fileStream;
 
-            // 2. Fetch Data AND Generate File
             switch (request.ReportType)
             {
                 case ReportType.PAYMENT:
@@ -74,11 +71,11 @@ namespace Corporate_Banking_Payment_Application.Services
                             throw new ArgumentException("No payment data found for the selected criteria.");
                         }
 
-                        // --- THIS IS THE FIX ---
+
                         var paymentReportData = filteredPayments.Select(p => new PaymentReportDto
                         {
                             PaymentId = p.PaymentId,
-                            // Use navigation properties to get the names
+
                             ClientName = p.Client?.CompanyName ?? "N/A",
                             BeneficiaryName = p.Beneficiary?.BeneficiaryName ?? "N/A",
                             Amount = p.Amount,
@@ -88,7 +85,7 @@ namespace Corporate_Banking_Payment_Application.Services
                             Description = p.Description,
                             RejectReason = p.RejectReason
                         }).ToList();
-                        // --- END OF FIX ---
+
 
                         fileStream = ReportGenerator.Generate(paymentReportData, request.OutputFormat, request.ReportType);
                         break;
@@ -104,11 +101,11 @@ namespace Corporate_Banking_Payment_Application.Services
                             throw new ArgumentException("No salary data found for the selected criteria.");
                         }
 
-                        // --- THIS IS THE FIX ---
+
                         var salaryReportData = filteredSalaries.Select(s => new SalaryReportDto
                         {
                             SalaryDisbursementId = s.SalaryDisbursementId,
-                            // Use navigation properties to get the names
+
                             ClientName = s.Client?.CompanyName ?? "N/A",
                             EmployeeName = s.Employee != null ? $"{s.Employee.FirstName} {s.Employee.LastName}" : "N/A",
                             Amount = s.Amount,
@@ -116,7 +113,7 @@ namespace Corporate_Banking_Payment_Application.Services
                             Description = s.Description,
                             BatchId = s.BatchId
                         }).ToList();
-                        // --- END OF FIX ---
+
 
                         fileStream = ReportGenerator.Generate(salaryReportData, request.OutputFormat, request.ReportType);
                         break;
@@ -134,7 +131,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
                         var combinedTransactions = new List<TransactionReportDto>();
 
-                        // This mapping is already correct
+
                         combinedTransactions.AddRange(allPayments.Select(p => new TransactionReportDto
                         {
                             TransactionId = $"PAY-{p.PaymentId}",
@@ -146,7 +143,7 @@ namespace Corporate_Banking_Payment_Application.Services
                             Description = p.Description
                         }));
 
-                        // This mapping is also already correct
+
                         combinedTransactions.AddRange(allSalaries.Select(s => new TransactionReportDto
                         {
                             TransactionId = $"SAL-{s.SalaryDisbursementId}",
@@ -175,7 +172,7 @@ namespace Corporate_Banking_Payment_Application.Services
                     throw new ArgumentException($"Unsupported ReportType: {request.ReportType}");
             }
 
-            // ... (rest of the method for saving, uploading, etc. is unchanged)
+
 
             byte[] fileBytes = fileStream.ToArray();
             fileStream.Close();
@@ -229,7 +226,7 @@ namespace Corporate_Banking_Payment_Application.Services
             };
         }
 
-        // --- (Internal Helper Methods are unchanged) ---
+
 
         private async Task<User> ValidateAndAuthorizeRequest(GenerateReportRequestDto request, int userId, UserRole currentUserRole)
         {

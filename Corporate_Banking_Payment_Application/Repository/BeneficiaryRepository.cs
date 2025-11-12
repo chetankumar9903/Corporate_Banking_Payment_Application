@@ -23,12 +23,12 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         public async Task<PagedResult<Beneficiary>> GetAllBeneficiaries(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            // Base query MUST include dependencies for searching and sorting
+
             var query = _context.Beneficiaries
                 .Include(b => b.Client)
                 .AsNoTracking();
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -41,10 +41,10 @@ namespace Corporate_Banking_Payment_Application.Repository
                 );
             }
 
-            // Get TOTAL COUNT *after* searching
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
             if (!string.IsNullOrWhiteSpace(sortColumn))
@@ -60,7 +60,7 @@ namespace Corporate_Banking_Payment_Application.Repository
                     case "ifsccode":
                         query = isDescending ? query.OrderByDescending(b => b.IfscCode) : query.OrderBy(b => b.IfscCode);
                         break;
-                    case "companyname": // Sort by client's company name
+                    case "companyname":
                         query = isDescending ? query.OrderByDescending(b => b.Client.CompanyName) : query.OrderBy(b => b.Client.CompanyName);
                         break;
                     case "beneficiaryname":
@@ -71,11 +71,10 @@ namespace Corporate_Banking_Payment_Application.Repository
             }
             else
             {
-                // Default sort
+
                 query = query.OrderBy(b => b.BeneficiaryName);
             }
 
-            // 3. PAGINATION
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -95,7 +94,7 @@ namespace Corporate_Banking_Payment_Application.Repository
                 .FirstOrDefaultAsync(b => b.BeneficiaryId == id);
         }
 
-        
+
 
         public async Task<IEnumerable<Beneficiary>> GetBeneficiariesByClientId(int clientId)
         {

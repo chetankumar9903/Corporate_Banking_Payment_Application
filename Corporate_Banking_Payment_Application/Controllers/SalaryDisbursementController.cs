@@ -17,12 +17,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             _service = service;
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var data = await _service.GetAll();
-        //    return Ok(data);
-        //}
+
 
         [HttpGet]
         public async Task<IActionResult> GetAll(
@@ -64,8 +59,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         public async Task<IActionResult> Create([FromBody] CreateSalaryDisbursementDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            //var created = await _service.Create(dto);
-            //return CreatedAtAction(nameof(GetById), new { id = created.SalaryDisbursementId }, created);
+
 
             try
             {
@@ -82,8 +76,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSalaryDisbursementDto dto)
         {
-            //var updated = await _service.Update(id, dto);
-            //return Ok(updated);
+
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 

@@ -4,7 +4,6 @@ namespace Corporate_Banking_Payment_Application.DTOs
 {
     public class BatchTransactionDto
     {
-        // ✅ For Reading
 
         public int BatchId { get; set; }
         public int ClientId { get; set; }
@@ -12,7 +11,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public int TotalTransactions { get; set; }
         public decimal TotalAmount { get; set; }
 
-        // Optional: to view all salary disbursements under this batch
+
         public IEnumerable<SalaryDisbursementDto>? SalaryDisbursements { get; set; }
     }
 

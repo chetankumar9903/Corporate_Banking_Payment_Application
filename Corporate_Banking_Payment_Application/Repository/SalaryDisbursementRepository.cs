@@ -39,7 +39,7 @@ namespace Corporate_Banking_Payment_Application.Repository
                 query = query.Where(s => s.ClientId == clientId.Value);
             }
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -47,14 +47,14 @@ namespace Corporate_Banking_Payment_Application.Repository
                     (s.Employee != null && (s.Employee.FirstName.ToLower().Contains(searchTerm) || (s.Employee.LastName != null && s.Employee.LastName.ToLower().Contains(searchTerm)))) ||
                     (s.Client != null && s.Client.CompanyName.ToLower().Contains(searchTerm)) ||
                     (s.Description != null && s.Description.ToLower().Contains(searchTerm)) ||
-                    (s.BatchId.HasValue && s.BatchId.ToString().Contains(searchTerm)) // Search by BatchId
+                    (s.BatchId.HasValue && s.BatchId.ToString().Contains(searchTerm))
                 );
             }
 
-            // Get TOTAL COUNT *after* searching
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
             if (!string.IsNullOrWhiteSpace(sortColumn))
@@ -80,11 +80,11 @@ namespace Corporate_Banking_Payment_Application.Repository
             }
             else
             {
-                // Default sort
+
                 query = query.OrderByDescending(s => s.Date);
             }
 
-            // 3. PAGINATION
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)

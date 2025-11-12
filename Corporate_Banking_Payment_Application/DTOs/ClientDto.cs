@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization; // Required for string-based enum in Swagger/API
+using System.Text.Json.Serialization;
 
 namespace Corporate_Banking_Payment_Application.DTOs
 {
 
-    [JsonConverter(typeof(JsonStringEnumConverter))] // Makes Swagger show "DEPOSIT" instead of 0
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TransactionType
     {
         DEPOSIT,
@@ -21,7 +21,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public decimal Balance { get; set; }
         public bool IsActive { get; set; }
 
-        // Related Data
+
         public string? CustomerName { get; set; }
         public string? BankName { get; set; }
     }
@@ -37,14 +37,13 @@ namespace Corporate_Banking_Payment_Application.DTOs
         [Required, MaxLength(100)]
         public string CompanyName { get; set; } = string.Empty;
 
-        [Range(0, (double)decimal.MaxValue)] // Use (double)decimal.MaxValue for range
+        [Range(0, (double)decimal.MaxValue)]
         public decimal InitialBalance { get; set; } = 0;
     }
 
     public class UpdateClientDto
     {
-        // ClientId should be passed via URL, not in the body for an update
-        // public int ClientId { get; set; } 
+
 
         [Required, MaxLength(100)]
         public string CompanyName { get; set; } = string.Empty;
@@ -52,16 +51,16 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public bool IsActive { get; set; } = true;
     }
 
-    // --- UPDATED DTO FOR BALANCE UPDATE ---
+
     public class UpdateClientBalanceDto
     {
         [Required]
-        // The enum now controls the action
+
         public TransactionType TransactionType { get; set; }
 
         [Required]
         [Range(0.01, (double)decimal.MaxValue, ErrorMessage = "Amount must be a positive value.")]
-        // This is the amount to deposit or withdraw
+
         public decimal Amount { get; set; }
     }
 }

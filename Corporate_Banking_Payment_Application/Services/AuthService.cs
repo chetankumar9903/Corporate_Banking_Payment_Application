@@ -18,7 +18,7 @@ namespace Corporate_Banking_Payment_Application.Services
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        //public AuthService(IUserRepository userRepo, IConfiguration config, IHttpClientFactory httpClientFactory)
+
         public AuthService(IUserRepository userRepo, ICustomerRepository customerRepo,
         IClientRepository clientRepo, IConfiguration config, IHttpClientFactory httpClientFactory)
         {
@@ -31,14 +31,14 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<AuthResponseDto> Register(RegisterDto dto)
         {
-            // Check for existing username or email
+
             if (await _userRepo.GetByUserName(dto.UserName) != null)
                 throw new Exception("Username already exists.");
 
             if (await _userRepo.GetByEmail(dto.EmailId) != null)
                 throw new Exception("Email already registered.");
 
-            // Hash password using BCrypt
+
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             var newUser = new User
@@ -85,7 +85,7 @@ namespace Corporate_Banking_Payment_Application.Services
             if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 throw new Exception("Invalid username or password.");
 
-            // Get optional customer & client (may be null)
+
             var customer = await _customerRepo.GetCustomerByUserId(user.UserId);
             Client? client = null;
             if (customer != null)
@@ -103,7 +103,7 @@ namespace Corporate_Banking_Payment_Application.Services
             //    FullName = $"{user.FirstName} {user.LastName}"
             //};
 
-            var token = GenerateJwtToken(user, client); // pass client to token generator
+            var token = GenerateJwtToken(user, client);
 
             return new AuthResponseDto
             {
@@ -123,7 +123,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 var secretKey = _config["GoogleReCaptcha:SecretKey"];
                 var client = _httpClientFactory.CreateClient();
 
-                // Send the token to Google's verification API
+
                 var response = await client.PostAsync(
                     $"https://www.google.com/recaptcha/api/siteverify?secret={secretKey}&response={token}",
                     null
@@ -140,12 +140,11 @@ namespace Corporate_Banking_Payment_Application.Services
             }
             catch (Exception)
             {
-                // If Google's API fails, block the login
+
                 return false;
             }
         }
 
-        //private string GenerateJwtToken(User user)
         //private string GenerateJwtToken(User user)
         //{
         //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
@@ -194,7 +193,7 @@ namespace Corporate_Banking_Payment_Application.Services
             new Claim("role", user.UserRole.ToString())
         };
 
-            // Add clientid claim only if user is linked to a client
+
             if (client != null)
             {
                 claims.Add(new Claim("clientid", client.ClientId.ToString()));

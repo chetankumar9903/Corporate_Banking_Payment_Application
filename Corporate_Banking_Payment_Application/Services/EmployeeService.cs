@@ -44,7 +44,7 @@ namespace Corporate_Banking_Payment_Application.Services
         public async Task<EmployeeDto?> GetEmployeeById(int id)
         {
             var employee = await _employeeRepo.GetEmployeeById(id);
-            // Map the single Employee model to EmployeeDto DTO, or return null
+
             return employee == null ? null : _mapper.Map<EmployeeDto>(employee);
         }
 
@@ -57,14 +57,14 @@ namespace Corporate_Banking_Payment_Application.Services
 
             var bank = client.Bank ?? throw new Exception($"Bank details not found for Client ID {dto.ClientId}.");
 
-            //  Count existing employees for this client (to increment)
+
             var existingEmployees = await _employeeRepo.GetEmployeesByClientId(dto.ClientId);
             int existingCount = existingEmployees.Count();
 
             var employee = _mapper.Map<Employee>(dto);
-            // Pre-generate unique EmployeeCode and AccountNumber
-            employee.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, 0); // placeholder
-            employee.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, 0); // placeholder
+
+            employee.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, 0);
+            employee.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, 0);
 
             var created = await _employeeRepo.AddEmployee(employee);
 
@@ -72,10 +72,10 @@ namespace Corporate_Banking_Payment_Application.Services
             //if (string.IsNullOrWhiteSpace(created.EmployeeCode))
             //    created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, created.EmployeeId);
 
-            //// account number using  client bank name
+
             //created.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, created.EmployeeId);
 
-            // Update with EmployeeId if needed
+
             created.EmployeeCode = EmployeeCodeGenerator.GenerateEmployeeCode(client.CompanyName, client.ClientId, created.EmployeeId);
             created.AccountNumber = AccountNumberGenerator.GenerateAccountNumber(bank.BankName, created.EmployeeId);
 
@@ -85,18 +85,17 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<EmployeeDto?> UpdateEmployee(int id, UpdateEmployeeDto dto)
         {
-            // 1. Fetch the existing model instance
+
             var existing = await _employeeRepo.GetEmployeeById(id);
             if (existing == null) return null;
 
-            // 2. Use AutoMapper to apply changes from the DTO to the existing model
-            // This handles the partial update logic (null checking) defined in your mapping profile
+
             _mapper.Map(dto, existing);
 
-            // 3. Save changes to the database
+
             await _employeeRepo.UpdateEmployee(existing);
 
-            // 4. Map the updated Model back to the DTO for the response
+
             return _mapper.Map<EmployeeDto>(existing);
         }
 
@@ -105,8 +104,7 @@ namespace Corporate_Banking_Payment_Application.Services
             var employee = await _employeeRepo.GetEmployeeById(id);
             if (employee == null) return false;
 
-            //await _employeeRepo.DeleteEmployee(employee);
-            //employee.IsActive = false;
+
             await _employeeRepo.DeleteEmployee(employee);
             return true;
         }
@@ -118,7 +116,7 @@ namespace Corporate_Banking_Payment_Application.Services
                 throw new Exception($"Client with ID {clientId} not found.");
             var employees = await _employeeRepo.GetEmployeesByClientId(clientId);
 
-            // If no employees found, return empty list (not null)
+
             return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
         }
 
@@ -138,7 +136,7 @@ namespace Corporate_Banking_Payment_Application.Services
         //    while ((line = await stream.ReadLineAsync()) != null)
         //    {
         //        lineNo++;
-        //        if (lineNo == 1) continue; // skip header
+        //        if (lineNo == 1) continue;
 
         //        var cols = line.Split(',');
         //        //if (cols.Length < 4)
@@ -178,7 +176,7 @@ namespace Corporate_Banking_Payment_Application.Services
         //            continue;
         //        }
 
-        //        await CreateEmployee(emp); // Reuse existing logic
+        //        await CreateEmployee(emp); 
         //        created++;
         //    }
 

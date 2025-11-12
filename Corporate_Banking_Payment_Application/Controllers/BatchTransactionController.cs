@@ -39,10 +39,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBatchTransactionDto dto)
         {
-            //if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            //var created = await _service.CreateBatch(dto);
-            //return CreatedAtAction(nameof(GetById), new { id = created.BatchId }, created);
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
@@ -79,7 +76,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             try
             {
                 var result = await _service.ProcessBatchCsv(file, clientId);
-                return Ok(result); // { created, skipped }
+                return Ok(result);
             }
             catch (Exception ex)
             {

@@ -12,9 +12,7 @@ namespace Corporate_Banking_Payment_Application.Models
         public string ReportName { get; set; } = string.Empty;
 
         [Required]
-        public ReportType ReportType { get; set; } // Transaction, Payment, Salary, etc.
-
-        // Stores the format (PDF or EXCEL) the report was generated in
+        public ReportType ReportType { get; set; }
         [Required]
         public ReportOutputFormat OutputFormat { get; set; }
 
@@ -22,7 +20,7 @@ namespace Corporate_Banking_Payment_Application.Models
         public int GeneratedBy { get; set; }
 
         [ForeignKey("Client")]
-        public int? ClientId { get; set; } // Make it nullable for reports not tied to one client
+        public int? ClientId { get; set; }
 
         [Required]
         public DateTime GeneratedDate { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(
@@ -30,13 +28,12 @@ namespace Corporate_Banking_Payment_Application.Models
             TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")
         );
 
-        // This path will hold the secure Cloudinary URL
-        [Required, MaxLength(350)] // Increased MaxLength to accommodate full Cloudinary URLs
+        [Required, MaxLength(350)]
         public string FilePath { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation
+
         public User? User { get; set; }
         public Client? Client { get; set; }
     }

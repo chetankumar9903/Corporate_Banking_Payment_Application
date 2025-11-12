@@ -17,7 +17,7 @@ namespace Corporate_Banking_Payment_Application.Repository
 
         private IQueryable<Payment> GetBaseQuery()
         {
-            // Base query includes navigation properties for all read operations
+
             return _context.Payments
                 .Include(p => p.Client)
                 .Include(p => p.Beneficiary);
@@ -34,43 +34,43 @@ namespace Corporate_Banking_Payment_Application.Repository
         {
             var query = GetBaseQuery().AsNoTracking();
 
-            // 1. SEARCHING
+
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
                 query = query.Where(p =>
-                    // Client User details
+
                     (p.Client != null && p.Client.Customer != null && p.Client.Customer.User != null && (
                         p.Client.Customer.User.FirstName.ToLower().Contains(searchTerm) ||
                         p.Client.Customer.User.LastName.ToLower().Contains(searchTerm) ||
                         p.Client.Customer.User.UserName.ToLower().Contains(searchTerm)
                     )) ||
 
-                    // Beneficiary details
+
                     (p.Beneficiary != null && (
                         p.Beneficiary.BeneficiaryName.ToLower().Contains(searchTerm) ||
                         p.Beneficiary.AccountNumber.ToLower().Contains(searchTerm) ||
                         p.Beneficiary.BankName.ToLower().Contains(searchTerm)
                     )) ||
 
-                    // Client account/bank details
+
                     (p.Client != null && (
                         p.Client.AccountNumber.ToLower().Contains(searchTerm) ||
                         (p.Client.Bank != null && p.Client.Bank.BankName.ToLower().Contains(searchTerm))
                     )) ||
 
-                    // Payment status
+
                     (p.PaymentStatus.ToString().ToLower().Contains(searchTerm)) ||
 
-                    // Processed Date (as string)
+
                     (p.ProcessedDate.HasValue && p.ProcessedDate.Value.ToString().Contains(searchTerm))
                 );
             }
 
-            // Get TOTAL COUNT *after* searching
+
             var totalCount = await query.CountAsync();
 
-            // 2. SORTING
+
             bool isDescending = sortOrder == SortOrder.DESC;
 
             if (!string.IsNullOrWhiteSpace(sortColumn))
@@ -102,11 +102,11 @@ namespace Corporate_Banking_Payment_Application.Repository
             }
             else
             {
-                // Default sort
+
                 query = query.OrderByDescending(p => p.RequestDate);
             }
 
-            // 3. PAGINATION
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)

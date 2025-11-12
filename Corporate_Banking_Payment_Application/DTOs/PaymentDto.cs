@@ -30,7 +30,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public NestedBeneficiaryDto Beneficiary { get; set; }
     }
 
-    // DTO for creating a new payment request (Write Operation)
+
     public class CreatePaymentDto
     {
         [Required(ErrorMessage = "Client ID is required.")]
@@ -42,20 +42,18 @@ namespace Corporate_Banking_Payment_Application.DTOs
         [Required(ErrorMessage = "Amount is required."), Range(1, double.MaxValue, ErrorMessage = "Amount must be greater than zero.")]
         public decimal Amount { get; set; }
 
-        // RequestDate and Status are typically set by the service layer, 
-        // but included here if the consumer needs to provide a description/reference.
+
         [MaxLength(200)]
         public string? Description { get; set; }
     }
 
-    // DTO for updating the status of an existing payment, primarily used by internal services/approvers.
+
     public class UpdatePaymentDto
     {
-        // PaymentStatus is the ONLY required field for an update now
+
         [Required(ErrorMessage = "Payment Status is required for status updates.")]
         public Status? PaymentStatus { get; set; }
 
-        // RejectReason is only relevant if the status is REJECTED
         [MaxLength(200)]
         public string? RejectReason { get; set; }
     }

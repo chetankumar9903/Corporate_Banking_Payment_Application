@@ -25,9 +25,9 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<PagedResult<UserDto>> GetAllUsers(string? searchTerm, string? sortColumn, SortOrder? sortOrder, int pageNumber, int pageSize)
         {
-            //var pagedResult = await _userRepo.GetAllUsers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
+
             var pagedResult = await _userRepo.GetAllUsers(searchTerm, sortColumn, sortOrder, pageNumber, pageSize);
-            // Map the items on the current page to DTOs
+
             var itemsDto = _mapper.Map<IEnumerable<UserDto>>(pagedResult.Items);
 
             return new PagedResult<UserDto>
@@ -45,7 +45,7 @@ namespace Corporate_Banking_Payment_Application.Services
 
         public async Task<UserDto> CreateUser(CreateUserDto dto)
         {
-            // Optional: check duplicate username
+
             var exists = await _userRepo.GetUserByUserName(dto.UserName);
             if (exists != null)
                 throw new Exception($"User with username '{dto.UserName}' already exists.");

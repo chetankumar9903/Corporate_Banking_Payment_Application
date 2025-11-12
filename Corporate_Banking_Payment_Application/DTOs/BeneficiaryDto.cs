@@ -17,7 +17,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public int ClientId { get; set; }
     }
 
-    // For creating a new beneficiary
+
     public class CreateBeneficiaryDto
     {
         [Required, MaxLength(100)]
@@ -50,7 +50,7 @@ namespace Corporate_Banking_Payment_Application.DTOs
         public bool IsActive { get; set; } = true;
     }
 
-    // For updating existing beneficiary
+
     public class UpdateBeneficiaryDto
     {
         [MaxLength(100)]

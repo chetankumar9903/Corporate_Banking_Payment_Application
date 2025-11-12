@@ -26,7 +26,6 @@ namespace Corporate_Banking_Payment_Application.Controllers
         //}
 
         [Authorize(Roles = "BANKUSER,SUPERADMIN,CLIENTUSER")]
-        // MODIFIED: This endpoint now accepts query parameters
         [HttpGet]
         public async Task<IActionResult> GetAll(
             [FromQuery] string? searchTerm = null,
@@ -49,7 +48,6 @@ namespace Corporate_Banking_Payment_Application.Controllers
         }
 
         [Authorize(Roles = "BANKUSER")]
-        // Get client by CustomerId
         [HttpGet("byCustomer/{customerId}")]
         public async Task<IActionResult> GetByCustomerId(int customerId)
         {
@@ -58,8 +56,6 @@ namespace Corporate_Banking_Payment_Application.Controllers
             return Ok(client);
         }
 
-
-        // Create new client (only if customer approved)
         [Authorize(Roles = "BANKUSER")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateClientDto dto)
@@ -120,7 +116,7 @@ namespace Corporate_Banking_Payment_Application.Controllers
             }
             catch (Exception ex)
             {
-                // Catches errors like "Insufficient funds"
+
                 return BadRequest(new { message = ex.Message });
             }
         }
